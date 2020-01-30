@@ -1758,7 +1758,7 @@
              * @throws {Error}
              * @return {Promise}             
              */
-            list: function(search = '', limit = 25, offset = 0, orderType = 'ASC') {
+            listFiles: function(search = '', limit = 25, offset = 0, orderType = 'ASC') {
                 let path = '/storage/files';
 
                 let payload = {};
@@ -1798,7 +1798,7 @@
              * @throws {Error}
              * @return {Promise}             
              */
-            create: function(file, read, write) {
+            createFile: function(file, read, write) {
                 if(file === undefined) {
                     throw new Error('Missing required parameter: "file"');
                 }
@@ -1843,7 +1843,7 @@
              * @throws {Error}
              * @return {Promise}             
              */
-            get: function(fileId) {
+            getFile: function(fileId) {
                 if(fileId === undefined) {
                     throw new Error('Missing required parameter: "fileId"');
                 }
@@ -1870,7 +1870,7 @@
              * @throws {Error}
              * @return {Promise}             
              */
-            update: function(fileId, read, write) {
+            updateFile: function(fileId, read, write) {
                 if(fileId === undefined) {
                     throw new Error('Missing required parameter: "fileId"');
                 }
@@ -1911,7 +1911,7 @@
              * @throws {Error}
              * @return {Promise}             
              */
-            delete: function(fileId) {
+            deleteFile: function(fileId) {
                 if(fileId === undefined) {
                     throw new Error('Missing required parameter: "fileId"');
                 }
@@ -1937,7 +1937,7 @@
              * @throws {Error}
              * @return {Promise}             
              */
-            getDownload: function(fileId) {
+            getFileDownload: function(fileId) {
                 if(fileId === undefined) {
                     throw new Error('Missing required parameter: "fileId"');
                 }
@@ -1969,7 +1969,7 @@
              * @throws {Error}
              * @return {Promise}             
              */
-            getPreview: function(fileId, width = 0, height = 0, quality = 100, background = '', output = '') {
+            getFilePreview: function(fileId, width = 0, height = 0, quality = 100, background = '', output = '') {
                 if(fileId === undefined) {
                     throw new Error('Missing required parameter: "fileId"');
                 }
@@ -2015,7 +2015,7 @@
              * @throws {Error}
              * @return {Promise}             
              */
-            getView: function(fileId, as = '') {
+            getFileView: function(fileId, as = '') {
                 if(fileId === undefined) {
                     throw new Error('Missing required parameter: "fileId"');
                 }
