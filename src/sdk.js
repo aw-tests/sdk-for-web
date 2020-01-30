@@ -2346,7 +2346,7 @@
              * @param {string} userId
              * @param {string} secret
              * @throws {Error}
-             * @return {null}             
+             * @return {Promise}             
              */
             updateMembershipStatus: function(teamId, inviteId, userId, secret) {
                 if(teamId === undefined) {
@@ -2377,9 +2377,10 @@
                     payload['secret'] = secret;
                 }
 
-                payload['project'] = config.project;
-
-                return iframe('patch', path, payload);
+                return http
+                    .patch(path, {
+                        'content-type': 'application/json',
+                    }, payload);
             }
         };
 
