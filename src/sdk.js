@@ -748,8 +748,8 @@
             /**
              * Create Account Session with OAuth2
              *
-             * Allow the user to login to his account using the OAuth provider of his
-             * choice. Each OAuth provider should be enabled from the Appwrite console
+             * Allow the user to login to his account using the OAuth2 provider of his
+             * choice. Each OAuth2 provider should be enabled from the Appwrite console
              * first. Use the success and failure arguments to provide a redirect URL's
              * back to your app when login is completed.
              *
@@ -1163,7 +1163,7 @@
              * @throws {Error}
              * @return {Promise}             
              */
-            listDocuments: function(collectionId, filters = [], offset = 0, limit = 50, orderField = '$uid', orderType = 'ASC', orderCast = 'string', search = '', first = 0, last = 0) {
+            listDocuments: function(collectionId, filters = [], offset = 0, limit = 50, orderField = '$id', orderType = 'ASC', orderCast = 'string', search = '', first = 0, last = 0) {
                 if(collectionId === undefined) {
                     throw new Error('Missing required parameter: "collectionId"');
                 }
