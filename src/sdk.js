@@ -286,28 +286,6 @@
             }
         }(window.document);
 
-        let iframe = function(method, url, params) {
-            let form = document.createElement('form');
-
-            form.setAttribute('method', method);
-            form.setAttribute('action', config.endpoint + url);
-
-            for(let key in params) {
-                if(params.hasOwnProperty(key)) {
-                    let hiddenField = document.createElement("input");
-                    hiddenField.setAttribute("type", "hidden");
-                    hiddenField.setAttribute("name", key);
-                    hiddenField.setAttribute("value", params[key]);
-
-                    form.appendChild(hiddenField);
-                }
-            }
-
-            document.body.appendChild(form);
-
-            return form.submit();
-        };
-
         let account = {
 
             /**
@@ -768,7 +746,7 @@
              * @param {string} success
              * @param {string} failure
              * @throws {Error}
-             * @return {string}             
+             * @return {Promise}             
              */
             createOAuth2Session: function(provider, success, failure) {
                 if(provider === undefined) {
@@ -795,11 +773,10 @@
                     payload['failure'] = failure;
                 }
 
-                payload['project'] = config.project;
-
-                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
-
-                return config.endpoint + path + ((query) ? '?' + query : '');
+                return http
+                    .get(path, {
+                        'content-type': 'application/json',
+                    }, payload);
             },
 
             /**
@@ -1729,7 +1706,7 @@
              *
              * @param {string} fileId
              * @throws {Error}
-             * @return {string}             
+             * @return {Promise}             
              */
             getFileDownload: function(fileId) {
                 if(fileId === undefined) {
@@ -1740,11 +1717,10 @@
 
                 let payload = {};
 
-                payload['project'] = config.project;
-
-                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
-
-                return config.endpoint + path + ((query) ? '?' + query : '');
+                return http
+                    .get(path, {
+                        'content-type': 'application/json',
+                    }, payload);
             },
 
             /**
@@ -1762,7 +1738,7 @@
              * @param {string} background
              * @param {string} output
              * @throws {Error}
-             * @return {string}             
+             * @return {Promise}             
              */
             getFilePreview: function(fileId, width = 0, height = 0, quality = 100, background = '', output = '') {
                 if(fileId === undefined) {
@@ -1793,11 +1769,10 @@
                     payload['output'] = output;
                 }
 
-                payload['project'] = config.project;
-
-                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
-
-                return config.endpoint + path + ((query) ? '?' + query : '');
+                return http
+                    .get(path, {
+                        'content-type': 'application/json',
+                    }, payload);
             },
 
             /**
@@ -1809,7 +1784,7 @@
              * @param {string} fileId
              * @param {string} as
              * @throws {Error}
-             * @return {string}             
+             * @return {Promise}             
              */
             getFileView: function(fileId, as = '') {
                 if(fileId === undefined) {
@@ -1824,11 +1799,10 @@
                     payload['as'] = as;
                 }
 
-                payload['project'] = config.project;
-
-                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
-
-                return config.endpoint + path + ((query) ? '?' + query : '');
+                return http
+                    .get(path, {
+                        'content-type': 'application/json',
+                    }, payload);
             }
         };
 
