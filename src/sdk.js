@@ -748,17 +748,9 @@
              * @throws {Error}
              * @return {Promise}             
              */
-            createOAuth2Session: function(provider, success, failure) {
+            createOAuth2Session: function(provider, success = 'https://localhost:2444/auth/oauth2/success', failure = 'https://localhost:2444/auth/oauth2/failure') {
                 if(provider === undefined) {
                     throw new Error('Missing required parameter: "provider"');
-                }
-                
-                if(success === undefined) {
-                    throw new Error('Missing required parameter: "success"');
-                }
-                
-                if(failure === undefined) {
-                    throw new Error('Missing required parameter: "failure"');
                 }
                 
                 let path = '/account/sessions/oauth2/{provider}'.replace(new RegExp('{provider}', 'g'), provider);
@@ -773,10 +765,11 @@
                     payload['failure'] = failure;
                 }
 
-                return http
-                    .get(path, {
-                        'content-type': 'application/json',
-                    }, payload);
+                payload['project'] = config.project;
+
+                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
+                
+                window.location = config.endpoint + path + ((query) ? '?' + query : '');
             },
 
             /**
@@ -1706,7 +1699,7 @@
              *
              * @param {string} fileId
              * @throws {Error}
-             * @return {Promise}             
+             * @return {string}             
              */
             getFileDownload: function(fileId) {
                 if(fileId === undefined) {
@@ -1717,10 +1710,11 @@
 
                 let payload = {};
 
-                return http
-                    .get(path, {
-                        'content-type': 'application/json',
-                    }, payload);
+                payload['project'] = config.project;
+
+                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
+                
+                return config.endpoint + path + ((query) ? '?' + query : '');
             },
 
             /**
@@ -1738,7 +1732,7 @@
              * @param {string} background
              * @param {string} output
              * @throws {Error}
-             * @return {Promise}             
+             * @return {string}             
              */
             getFilePreview: function(fileId, width = 0, height = 0, quality = 100, background = '', output = '') {
                 if(fileId === undefined) {
@@ -1769,10 +1763,11 @@
                     payload['output'] = output;
                 }
 
-                return http
-                    .get(path, {
-                        'content-type': 'application/json',
-                    }, payload);
+                payload['project'] = config.project;
+
+                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
+                
+                return config.endpoint + path + ((query) ? '?' + query : '');
             },
 
             /**
@@ -1784,7 +1779,7 @@
              * @param {string} fileId
              * @param {string} as
              * @throws {Error}
-             * @return {Promise}             
+             * @return {string}             
              */
             getFileView: function(fileId, as = '') {
                 if(fileId === undefined) {
@@ -1799,10 +1794,11 @@
                     payload['as'] = as;
                 }
 
-                return http
-                    .get(path, {
-                        'content-type': 'application/json',
-                    }, payload);
+                payload['project'] = config.project;
+
+                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
+                
+                return config.endpoint + path + ((query) ? '?' + query : '');
             }
         };
 

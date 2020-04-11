@@ -4,7 +4,7 @@ sdk
     .setProject('5df5acd0d48c2') // Your project ID
 ;
 
-let promise = sdk.account.createOAuth2Session('bitbucket', 'https://example.com', 'https://example.com');
+let promise = sdk.account.createOAuth2Session('bitbucket');
 
 promise.then(function (response) {
     console.log(response); // Success
