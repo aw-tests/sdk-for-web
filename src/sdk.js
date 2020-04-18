@@ -765,10 +765,11 @@
                     payload['failure'] = failure;
                 }
 
-                return http
-                    .get(path, {
-                        'content-type': 'application/json',
-                    }, payload);
+                payload['project'] = config.project;
+
+                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
+                
+                window.location = config.endpoint + path + ((query) ? '?' + query : '');
             },
 
             /**
@@ -1131,7 +1132,7 @@
              * modes](/docs/admin).
              *
              * @param {string} collectionId
-             * @param {array} filters
+             * @param {string[]} filters
              * @param {number} offset
              * @param {number} limit
              * @param {string} orderField
@@ -1201,8 +1202,8 @@
              *
              * @param {string} collectionId
              * @param {object} data
-             * @param {array} read
-             * @param {array} write
+             * @param {string[]} read
+             * @param {string[]} write
              * @param {string} parentDocument
              * @param {string} parentProperty
              * @param {string} parentPropertyType
@@ -1297,8 +1298,8 @@
              * @param {string} collectionId
              * @param {string} documentId
              * @param {object} data
-             * @param {array} read
-             * @param {array} write
+             * @param {string[]} read
+             * @param {string[]} write
              * @throws {Error}
              * @return {Promise}             
              */
@@ -1404,7 +1405,7 @@
             },
 
             /**
-             * List Countries
+             * List Continents
              *
              * List of all continents. You can use the locale header to get the data in a
              * supported language.
@@ -1556,8 +1557,8 @@
              * read and write arguments.
              *
              * @param {File} file
-             * @param {array} read
-             * @param {array} write
+             * @param {string[]} read
+             * @param {string[]} write
              * @throws {Error}
              * @return {Promise}             
              */
@@ -1628,8 +1629,8 @@
              * to update this resource.
              *
              * @param {string} fileId
-             * @param {array} read
-             * @param {array} write
+             * @param {string[]} read
+             * @param {string[]} write
              * @throws {Error}
              * @return {Promise}             
              */
@@ -1698,7 +1699,7 @@
              *
              * @param {string} fileId
              * @throws {Error}
-             * @return {Promise}             
+             * @return {string}             
              */
             getFileDownload: function(fileId) {
                 if(fileId === undefined) {
@@ -1709,10 +1710,11 @@
 
                 let payload = {};
 
-                return http
-                    .get(path, {
-                        'content-type': 'application/json',
-                    }, payload);
+                payload['project'] = config.project;
+
+                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
+                
+                return config.endpoint + path + ((query) ? '?' + query : '');
             },
 
             /**
@@ -1730,7 +1732,7 @@
              * @param {string} background
              * @param {string} output
              * @throws {Error}
-             * @return {Promise}             
+             * @return {string}             
              */
             getFilePreview: function(fileId, width = 0, height = 0, quality = 100, background = '', output = '') {
                 if(fileId === undefined) {
@@ -1761,10 +1763,11 @@
                     payload['output'] = output;
                 }
 
-                return http
-                    .get(path, {
-                        'content-type': 'application/json',
-                    }, payload);
+                payload['project'] = config.project;
+
+                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
+                
+                return config.endpoint + path + ((query) ? '?' + query : '');
             },
 
             /**
@@ -1776,7 +1779,7 @@
              * @param {string} fileId
              * @param {string} as
              * @throws {Error}
-             * @return {Promise}             
+             * @return {string}             
              */
             getFileView: function(fileId, as = '') {
                 if(fileId === undefined) {
@@ -1791,10 +1794,11 @@
                     payload['as'] = as;
                 }
 
-                return http
-                    .get(path, {
-                        'content-type': 'application/json',
-                    }, payload);
+                payload['project'] = config.project;
+
+                let query = Object.keys(payload).map(key => key + '=' + encodeURIComponent(payload[key])).join('&');
+                
+                return config.endpoint + path + ((query) ? '?' + query : '');
             }
         };
 
@@ -1850,7 +1854,7 @@
              * project.
              *
              * @param {string} name
-             * @param {array} roles
+             * @param {string[]} roles
              * @throws {Error}
              * @return {Promise}             
              */
@@ -2005,7 +2009,7 @@
              *
              * @param {string} teamId
              * @param {string} email
-             * @param {array} roles
+             * @param {string[]} roles
              * @param {string} url
              * @param {string} name
              * @throws {Error}
