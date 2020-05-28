@@ -1,4 +1,4 @@
-// Type definitions for appwrite 1.0.29
+// Type definitions for appwrite 1.1.0
 // Project: Appwrite
 
 
@@ -321,9 +321,9 @@ declare namespace Appwrite {
          * @param {number} height
          * @param {number} quality
          * @throws {Error}
-         * @return {Promise}         
+         * @return {string}         
          */
-	    getBrowser(code: string, width: number, height: number, quality: number): Promise<object>;
+	    getBrowser(code: string, width: number, height: number, quality: number): string;
 
         /**
          * Get Credit Card Icon
