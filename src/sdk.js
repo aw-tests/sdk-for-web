@@ -708,10 +708,11 @@
              * @param {string} provider
              * @param {string} success
              * @param {string} failure
+             * @param {string[]} scopes
              * @throws {Error}
              * @return {Promise}             
              */
-            createOAuth2Session: function(provider, success = 'https://appwrite.io/auth/oauth2/success', failure = 'https://appwrite.io/auth/oauth2/failure') {
+            createOAuth2Session: function(provider, success = 'https://appwrite.io/auth/oauth2/success', failure = 'https://appwrite.io/auth/oauth2/failure', scopes = []) {
                 if(provider === undefined) {
                     throw new Error('Missing required parameter: "provider"');
                 }
@@ -726,6 +727,10 @@
 
                 if(failure) {
                     payload['failure'] = failure;
+                }
+
+                if(scopes) {
+                    payload['scopes'] = scopes;
                 }
 
                 payload['project'] = config.project;
