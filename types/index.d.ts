@@ -75,7 +75,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {Promise}         
          */
-	    create(email: string, password: string, name: string): Promise<object>;
+	    create(email: string, password: string, name?: string): Promise<object>;
 
         /**
          * Delete Account
@@ -252,7 +252,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {Promise}         
          */
-	    createOAuth2Session(provider: string, success: string, failure: string, scopes: string[]): Promise<object>;
+	    createOAuth2Session(provider: string, success?: string, failure?: string, scopes?: string[]): Promise<object>;
 
         /**
          * Delete Account Session
@@ -325,7 +325,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {string}         
          */
-	    getBrowser(code: string, width: number, height: number, quality: number): string;
+	    getBrowser(code: string, width?: number, height?: number, quality?: number): string;
 
         /**
          * Get Credit Card Icon
@@ -342,7 +342,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {string}         
          */
-	    getCreditCard(code: string, width: number, height: number, quality: number): string;
+	    getCreditCard(code: string, width?: number, height?: number, quality?: number): string;
 
         /**
          * Get Favicon
@@ -370,7 +370,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {string}         
          */
-	    getFlag(code: string, width: number, height: number, quality: number): string;
+	    getFlag(code: string, width?: number, height?: number, quality?: number): string;
 
         /**
          * Get Image from URL
@@ -386,7 +386,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {string}         
          */
-	    getImage(url: string, width: number, height: number): string;
+	    getImage(url: string, width?: number, height?: number): string;
 
         /**
          * Get User Initials
@@ -410,7 +410,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {string}         
          */
-	    getInitials(name: string, width: number, height: number, color: string, background: string): string;
+	    getInitials(name?: string, width?: number, height?: number, color?: string, background?: string): string;
 
         /**
          * Get QR Code
@@ -425,7 +425,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {string}         
          */
-	    getQR(text: string, size: number, margin: number, download: boolean): string;
+	    getQR(text: string, size?: number, margin?: number, download?: boolean): string;
 
 	}
 
@@ -441,8 +441,8 @@ declare namespace Appwrite {
 	     *
          * @param {string} collectionId
          * @param {string[]} filters
-         * @param {number} limit
          * @param {number} offset
+         * @param {number} limit
          * @param {string} orderField
          * @param {string} orderType
          * @param {string} orderCast
@@ -450,7 +450,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {Promise}         
          */
-	    listDocuments(collectionId: string, filters: string[], limit: number, offset: number, orderField: string, orderType: string, orderCast: string, search: string): Promise<object>;
+	    listDocuments(collectionId: string, filters?: string[], offset?: number, limit?: number, orderField?: string, orderType?: string, orderCast?: string, search?: string): Promise<object>;
 
         /**
          * Create Document
@@ -470,7 +470,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {Promise}         
          */
-	    createDocument(collectionId: string, data: object, read: string[], write: string[], parentDocument: string, parentProperty: string, parentPropertyType: string): Promise<object>;
+	    createDocument(collectionId: string, data: object, read: string[], write: string[], parentDocument?: string, parentProperty?: string, parentPropertyType?: string): Promise<object>;
 
         /**
          * Get Document
@@ -617,7 +617,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {Promise}         
          */
-	    listFiles(search: string, limit: number, offset: number, orderType: string): Promise<object>;
+	    listFiles(search?: string, limit?: number, offset?: number, orderType?: string): Promise<object>;
 
         /**
          * Create File
@@ -702,7 +702,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {string}         
          */
-	    getFilePreview(fileId: string, width: number, height: number, quality: number, background: string, output: string): string;
+	    getFilePreview(fileId: string, width?: number, height?: number, quality?: number, background?: string, output?: string): string;
 
         /**
          * Get File for View
@@ -715,7 +715,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {string}         
          */
-	    getFileView(fileId: string, as: string): string;
+	    getFileView(fileId: string, as?: string): string;
 
 	}
 
@@ -735,7 +735,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {Promise}         
          */
-	    list(search: string, limit: number, offset: number, orderType: string): Promise<object>;
+	    list(search?: string, limit?: number, offset?: number, orderType?: string): Promise<object>;
 
         /**
          * Create Team
@@ -750,7 +750,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {Promise}         
          */
-	    create(name: string, roles: string[]): Promise<object>;
+	    create(name: string, roles?: string[]): Promise<object>;
 
         /**
          * Get Team
@@ -803,7 +803,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {Promise}         
          */
-	    getMemberships(teamId: string, search: string, limit: number, offset: number, orderType: string): Promise<object>;
+	    getMemberships(teamId: string, search?: string, limit?: number, offset?: number, orderType?: string): Promise<object>;
 
         /**
          * Create Team Membership
@@ -830,7 +830,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {Promise}         
          */
-	    createMembership(teamId: string, email: string, roles: string[], url: string, name: string): Promise<object>;
+	    createMembership(teamId: string, email: string, roles: string[], url: string, name?: string): Promise<object>;
 
         /**
          * Delete Team Membership

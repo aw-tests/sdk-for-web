@@ -103,7 +103,7 @@
                 globalParams.push({key: key, value: value});
             };
 
-            addGlobalHeader('x-sdk-version', 'appwrite:javascript:1.1.0');
+            addGlobalHeader('x-sdk-version', 'appwrite:web:1.1.0');
             addGlobalHeader('content-type', '');
 
             /**
@@ -1282,8 +1282,8 @@
              *
              * @param {string} collectionId
              * @param {string[]} filters
-             * @param {number} limit
              * @param {number} offset
+             * @param {number} limit
              * @param {string} orderField
              * @param {string} orderType
              * @param {string} orderCast
@@ -1291,7 +1291,7 @@
              * @throws {Error}
              * @return {Promise}             
              */
-            listDocuments: function(collectionId, filters = [], limit = 25, offset = 0, orderField = '$id', orderType = 'ASC', orderCast = 'string', search = '') {
+            listDocuments: function(collectionId, filters = [], offset = 0, limit = 50, orderField = '$id', orderType = 'ASC', orderCast = 'string', search = '') {
                 if(collectionId === undefined) {
                     throw new Error('Missing required parameter: "collectionId"');
                 }
@@ -1304,12 +1304,12 @@
                     payload['filters'] = filters;
                 }
 
-                if(limit) {
-                    payload['limit'] = limit;
-                }
-
                 if(offset) {
                     payload['offset'] = offset;
+                }
+
+                if(limit) {
+                    payload['limit'] = limit;
                 }
 
                 if(orderField) {
