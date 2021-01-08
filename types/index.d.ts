@@ -39,7 +39,6 @@ declare class Appwrite {
 	account:Appwrite.Account;
 	avatars:Appwrite.Avatars;
 	database:Appwrite.Database;
-	functions:Appwrite.Functions;
 	locale:Appwrite.Locale;
 	storage:Appwrite.Storage;
 	teams:Appwrite.Teams;
@@ -66,8 +65,8 @@ declare namespace Appwrite {
          * Use this endpoint to allow a new user to register a new account in your
          * project. After the user registration completes successfully, you can use
          * the [/account/verfication](/docs/client/account#createVerification) route
-         * to start verifying the user email address. To allow the new user to login
-         * to their new account, you need to create a new [account
+         * to start verifying the user email address. To allow your new user to login
+         * to his new account, you need to create a new [account
          * session](/docs/client/account#createSession).
 	     *
          * @param {string} email
@@ -217,7 +216,7 @@ declare namespace Appwrite {
         /**
          * Create Account Session
          *
-         * Allow the user to login into their account by providing a valid email and
+         * Allow the user to login into his account by providing a valid email and
          * password combination. This route will create a new session for the user.
 	     *
          * @param {string} email
@@ -241,7 +240,7 @@ declare namespace Appwrite {
         /**
          * Create Account Session with OAuth2
          *
-         * Allow the user to login to their account using the OAuth2 provider of their
+         * Allow the user to login to his account using the OAuth2 provider of his
          * choice. Each OAuth2 provider should be enabled from the Appwrite console
          * first. Use the success and failure arguments to provide a redirect URL's
          * back to your app when login is completed.
@@ -258,9 +257,9 @@ declare namespace Appwrite {
         /**
          * Delete Account Session
          *
-         * Use this endpoint to log out the currently logged in user from all their
-         * account sessions across all of their different devices. When using the
-         * option id argument, only the session unique ID provider will be deleted.
+         * Use this endpoint to log out the currently logged in user from all his
+         * account sessions across all his different devices. When using the option id
+         * argument, only the session unique ID provider will be deleted.
 	     *
          * @param {string} sessionId
          * @throws {Error}
@@ -278,7 +277,7 @@ declare namespace Appwrite {
          * should redirect the user back to your app and allow you to complete the
          * verification process by verifying both the **userId** and **secret**
          * parameters. Learn more about how to [complete the verification
-         * process](/docs/client/account#updateVerification). 
+         * process](/docs/client/account#updateAccountVerification). 
          * 
          * Please note that in order to avoid a [Redirect
          * Attack](https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.md),
@@ -348,9 +347,8 @@ declare namespace Appwrite {
         /**
          * Get Favicon
          *
-         * Use this endpoint to fetch the favorite icon (AKA favicon) of any remote
+         * Use this endpoint to fetch the favorite icon (AKA favicon) of a  any remote
          * website URL.
-         * 
 	     *
          * @param {string} url
          * @throws {Error}
@@ -443,8 +441,8 @@ declare namespace Appwrite {
 	     *
          * @param {string} collectionId
          * @param {string[]} filters
-         * @param {number} limit
          * @param {number} offset
+         * @param {number} limit
          * @param {string} orderField
          * @param {string} orderType
          * @param {string} orderCast
@@ -452,7 +450,7 @@ declare namespace Appwrite {
          * @throws {Error}
          * @return {Promise}         
          */
-	    listDocuments(collectionId: string, filters?: string[], limit?: number, offset?: number, orderField?: string, orderType?: string, orderCast?: string, search?: string): Promise<object>;
+	    listDocuments(collectionId: string, filters?: string[], offset?: number, limit?: number, orderField?: string, orderType?: string, orderCast?: string, search?: string): Promise<object>;
 
         /**
          * Create Document
@@ -505,7 +503,7 @@ declare namespace Appwrite {
          * Delete Document
          *
          * Delete document by its unique ID. This endpoint deletes only the parent
-         * documents, its attributes and relations to other documents. Child documents
+         * documents, his attributes and relations to other documents. Child documents
          * **will not** be deleted.
 	     *
          * @param {string} collectionId
@@ -514,45 +512,6 @@ declare namespace Appwrite {
          * @return {Promise}         
          */
 	    deleteDocument(collectionId: string, documentId: string): Promise<object>;
-
-	}
-
-    export interface Functions {
-
-        /**
-         * List Executions
-         *
-	     *
-         * @param {string} functionId
-         * @param {string} search
-         * @param {number} limit
-         * @param {number} offset
-         * @param {string} orderType
-         * @throws {Error}
-         * @return {Promise}         
-         */
-	    listExecutions(functionId: string, search?: string, limit?: number, offset?: number, orderType?: string): Promise<object>;
-
-        /**
-         * Create Execution
-         *
-	     *
-         * @param {string} functionId
-         * @throws {Error}
-         * @return {Promise}         
-         */
-	    createExecution(functionId: string): Promise<object>;
-
-        /**
-         * Get Execution
-         *
-	     *
-         * @param {string} functionId
-         * @param {string} executionId
-         * @throws {Error}
-         * @return {Promise}         
-         */
-	    getExecution(functionId: string, executionId: string): Promise<object>;
 
 	}
 
@@ -752,10 +711,11 @@ declare namespace Appwrite {
          * method but returns with no  'Content-Disposition: attachment' header.
 	     *
          * @param {string} fileId
+         * @param {string} as
          * @throws {Error}
          * @return {string}         
          */
-	    getFileView(fileId: string): string;
+	    getFileView(fileId: string, as?: string): string;
 
 	}
 
@@ -877,7 +837,7 @@ declare namespace Appwrite {
          *
          * This endpoint allows a user to leave a team or for a team owner to delete
          * the membership of any other team member. You can also use this endpoint to
-         * delete a user membership even if it is not accepted.
+         * delete a user membership even if he didn't accept it.
 	     *
          * @param {string} teamId
          * @param {string} inviteId
@@ -890,8 +850,8 @@ declare namespace Appwrite {
          * Update Team Membership Status
          *
          * Use this endpoint to allow a user to accept an invitation to join a team
-         * after being redirected back to your app from the invitation email recieved
-         * by the user.
+         * after he is being redirected back to your app from the invitation email he
+         * was sent.
 	     *
          * @param {string} teamId
          * @param {string} inviteId
