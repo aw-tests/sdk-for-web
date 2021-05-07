@@ -25,7 +25,7 @@ class Appwrite {
     config = {
         endpoint: 'https://appwrite.io/v1',
         project: '',
-        jWT: '',
+        jwt: '',
         locale: '',
     };
     headers: Headers = {
@@ -73,7 +73,7 @@ class Appwrite {
      */
     setJWT(value: string): this {
         this.headers['X-Appwrite-JWT'] = value;
-        this.config.jWT = value;
+        this.config.jwt = value;
         return this;
     }
 
@@ -132,11 +132,15 @@ class Appwrite {
         }
 
         try {
+            let data = null;
             const response = await fetch(url.toString(), options);
-            const data = await response.json();
 
+            if (response.headers.get("content-type")?.includes('application/json')) {
+                data = await response.json();
+            }
+            
             if (400 <= response.status) {
-                throw new AppwriteException(data.message, response.status, data);
+                throw new AppwriteException(data?.message, response.status, data);
             }
 
             const cookieFallback = response.headers.get('X-Fallback-Cookies');
