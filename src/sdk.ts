@@ -33,6 +33,10 @@ namespace Models {
      */
     export type LogList<> = {
         /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
          * List of logs.
          */
         logs: Log[];
@@ -1720,12 +1724,22 @@ class Appwrite {
          * Get currently logged in user list of latest security activity logs. Each
          * log returns user IP address, location and date and time of log.
          *
+         * @param {number} limit
+         * @param {number} offset
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getLogs: async (): Promise<Models.LogList> => {
+        getLogs: async (limit?: number, offset?: number): Promise<Models.LogList> => {
             let path = '/account/logs';
             let payload: Payload = {};
+
+            if (typeof limit !== 'undefined') {
+                payload['limit'] = limit;
+            }
+
+            if (typeof offset !== 'undefined') {
+                payload['offset'] = offset;
+            }
 
             const uri = new URL(this.config.endpoint + path);
             return await this.call('get', uri, {
@@ -2716,12 +2730,12 @@ class Appwrite {
          * @param {string} collectionId
          * @param {string} documentId
          * @param {object} data
-         * @param {string} read
-         * @param {string} write
+         * @param {string[]} read
+         * @param {string[]} write
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createDocument: async <Document extends Models.Document>(collectionId: string, documentId: string, data: object, read?: string, write?: string): Promise<Document> => {
+        createDocument: async <Document extends Models.Document>(collectionId: string, documentId: string, data: object, read?: string[], write?: string[]): Promise<Document> => {
             if (typeof collectionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "collectionId"');
             }
@@ -2797,12 +2811,12 @@ class Appwrite {
          * @param {string} collectionId
          * @param {string} documentId
          * @param {object} data
-         * @param {string} read
-         * @param {string} write
+         * @param {string[]} read
+         * @param {string[]} write
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updateDocument: async <Document extends Models.Document>(collectionId: string, documentId: string, data: object, read?: string, write?: string): Promise<Document> => {
+        updateDocument: async <Document extends Models.Document>(collectionId: string, documentId: string, data: object, read?: string[], write?: string[]): Promise<Document> => {
             if (typeof collectionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "collectionId"');
             }
@@ -3900,45 +3914,8 @@ class Appwrite {
             }, payload);
         }
     };
+
 };
-
-type QueryTypes = string | number | boolean | QueryTypesList;
-type QueryTypesList = string[] | number[] | boolean[];
-
-export class Query {
-  static equal = (attribute: string, value: QueryTypes): string =>
-    Query.addQuery(attribute, "equal", value);
-
-  static notEqual = (attribute: string, value: QueryTypes): string =>
-    Query.addQuery(attribute, "notEqual", value);
-
-  static lesser = (attribute: string, value: QueryTypes): string =>
-    Query.addQuery(attribute, "lesser", value);
-
-  static lesserEqual = (attribute: string, value: QueryTypes): string =>
-    Query.addQuery(attribute, "lesserEqual", value);
-
-  static greater = (attribute: string, value: QueryTypes): string =>
-    Query.addQuery(attribute, "greater", value);
-
-  static greaterEqual = (attribute: string, value: QueryTypes): string =>
-    Query.addQuery(attribute, "greaterEqual", value);
-
-  static contains = (attribute: string, value: QueryTypesList): string =>
-    Query.addQuery(attribute, "contains", value);
-
-  private static addQuery = (attribute: string, oper: string, value: QueryTypes): string =>
-    value instanceof Array
-      ? `${attribute}.${oper}(${value
-          .map((v) => Query.parseValues(v))
-          .join(",")})`
-      : `${attribute}.${oper}(${Query.parseValues(value)})`;
-
-  private static parseValues = (value: QueryTypes): string =>
-    typeof value === "string" || value instanceof String
-      ? `"${value}"`
-      : `${value}`;
-}
 
 export { Appwrite }
 export type { AppwriteException, Models }
