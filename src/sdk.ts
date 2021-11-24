@@ -3917,8 +3917,9 @@ class Appwrite {
 
 };
 
+type QueryTypesSingle = string | number | boolean;
 type QueryTypesList = string[] | number[] | boolean[];
-type QueryTypes = string | number | boolean | QueryTypesList;
+type QueryTypes = QueryTypesSingle | QueryTypesList;
 
 class Query {
   static equal = (attribute: string, value: QueryTypes): string =>
@@ -3945,7 +3946,7 @@ class Query {
   private static addQuery = (attribute: string, oper: string, value: QueryTypes): string =>
     value instanceof Array
       ? `${attribute}.${oper}(${value
-          .map((v) => Query.parseValues(v))
+          .map((v: QueryTypesSingle) => Query.parseValues(v))
           .join(",")})`
       : `${attribute}.${oper}(${Query.parseValues(value)})`;
 
@@ -3957,12 +3958,3 @@ class Query {
 
 export { Appwrite, Query }
 export type { AppwriteException, Models, QueryTypes, QueryTypesList }
-
-const sdk = new Appwrite();
-type Movie = {
-    title: string;
-} & Models.Document;
-
-sdk.database.listDocuments<Movie>('movies', [
-    Query.equal('title', 'Avatar')
-]);
