@@ -5,7 +5,7 @@ sdk
     .setProject('5df5acd0d48c2') // Your project ID
 ;
 
-let promise = sdk.teams.updateMembershipStatus('[TEAM_ID]', '[MEMBERSHIP_ID]', '[USER_ID]', '[SECRET]');
+let promise = sdk.account.createMagicURLSession('', 'email@example.com');
 
 promise.then(function (response) {
     console.log(response); // Success

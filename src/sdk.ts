@@ -1,3 +1,1122 @@
+import 'isomorphic-form-data';
+import { fetch } from 'cross-fetch';
+
+namespace Models {
+    /**
+     * Documents List
+     */
+    export type DocumentList<Document extends Models.Document> = {
+        /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
+         * List of documents.
+         */
+        documents: Document[];
+    }
+    /**
+     * Sessions List
+     */
+    export type SessionList<> = {
+        /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
+         * List of sessions.
+         */
+        sessions: Session[];
+    }
+    /**
+     * Logs List
+     */
+    export type LogList<> = {
+        /**
+         * List of logs.
+         */
+        logs: Log[];
+    }
+    /**
+     * Files List
+     */
+    export type FileList<> = {
+        /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
+         * List of files.
+         */
+        files: File[];
+    }
+    /**
+     * Teams List
+     */
+    export type TeamList<> = {
+        /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
+         * List of teams.
+         */
+        teams: Team[];
+    }
+    /**
+     * Memberships List
+     */
+    export type MembershipList<> = {
+        /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
+         * List of memberships.
+         */
+        memberships: Membership[];
+    }
+    /**
+     * Executions List
+     */
+    export type ExecutionList<> = {
+        /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
+         * List of executions.
+         */
+        executions: Execution[];
+    }
+    /**
+     * Countries List
+     */
+    export type CountryList<> = {
+        /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
+         * List of countries.
+         */
+        countries: Country[];
+    }
+    /**
+     * Continents List
+     */
+    export type ContinentList<> = {
+        /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
+         * List of continents.
+         */
+        continents: Continent[];
+    }
+    /**
+     * Languages List
+     */
+    export type LanguageList<> = {
+        /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
+         * List of languages.
+         */
+        languages: Language[];
+    }
+    /**
+     * Currencies List
+     */
+    export type CurrencyList<> = {
+        /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
+         * List of currencies.
+         */
+        currencies: Currency[];
+    }
+    /**
+     * Phones List
+     */
+    export type PhoneList<> = {
+        /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
+         * List of phones.
+         */
+        phones: Phone[];
+    }
+    /**
+     * Collection
+     */
+    export type Collection<> = {
+        /**
+         * Collection ID.
+         */
+        $id: string;
+        /**
+         * Collection read permissions.
+         */
+        $read: string[];
+        /**
+         * Collection write permissions.
+         */
+        $write: string[];
+        /**
+         * Collection name.
+         */
+        name: string;
+        /**
+         * Collection permission model. Possible values: `document` or `collection`
+         */
+        permission: string;
+        /**
+         * Collection attributes.
+         */
+        attributes: string[];
+        /**
+         * Collection indexes.
+         */
+        indexes: Index[];
+    }
+    /**
+     * AttributeString
+     */
+    export type AttributeString<> = {
+        /**
+         * Attribute Key.
+         */
+        key: string;
+        /**
+         * Attribute type.
+         */
+        type: string;
+        /**
+         * Attribute status. Possible values: `available`, `processing`, `deleting`, `stuck`, or `failed`
+         */
+        status: string;
+        /**
+         * Is attribute required?
+         */
+        required: boolean;
+        /**
+         * Is attribute an array?
+         */
+        array: boolean;
+        /**
+         * Attribute size.
+         */
+        size: string;
+        /**
+         * Default value for attribute when not provided. Cannot be set when attribute is required.
+         */
+        xdefault: string;
+    }
+    /**
+     * AttributeInteger
+     */
+    export type AttributeInteger<> = {
+        /**
+         * Attribute Key.
+         */
+        key: string;
+        /**
+         * Attribute type.
+         */
+        type: string;
+        /**
+         * Attribute status. Possible values: `available`, `processing`, `deleting`, `stuck`, or `failed`
+         */
+        status: string;
+        /**
+         * Is attribute required?
+         */
+        required: boolean;
+        /**
+         * Is attribute an array?
+         */
+        array: boolean;
+        /**
+         * Minimum value to enforce for new documents.
+         */
+        min: number;
+        /**
+         * Maximum value to enforce for new documents.
+         */
+        max: number;
+        /**
+         * Default value for attribute when not provided. Cannot be set when attribute is required.
+         */
+        xdefault: number;
+    }
+    /**
+     * AttributeFloat
+     */
+    export type AttributeFloat<> = {
+        /**
+         * Attribute Key.
+         */
+        key: string;
+        /**
+         * Attribute type.
+         */
+        type: string;
+        /**
+         * Attribute status. Possible values: `available`, `processing`, `deleting`, `stuck`, or `failed`
+         */
+        status: string;
+        /**
+         * Is attribute required?
+         */
+        required: boolean;
+        /**
+         * Is attribute an array?
+         */
+        array: boolean;
+        /**
+         * Minimum value to enforce for new documents.
+         */
+        min: number;
+        /**
+         * Maximum value to enforce for new documents.
+         */
+        max: number;
+        /**
+         * Default value for attribute when not provided. Cannot be set when attribute is required.
+         */
+        xdefault: number;
+    }
+    /**
+     * AttributeBoolean
+     */
+    export type AttributeBoolean<> = {
+        /**
+         * Attribute Key.
+         */
+        key: string;
+        /**
+         * Attribute type.
+         */
+        type: string;
+        /**
+         * Attribute status. Possible values: `available`, `processing`, `deleting`, `stuck`, or `failed`
+         */
+        status: string;
+        /**
+         * Is attribute required?
+         */
+        required: boolean;
+        /**
+         * Is attribute an array?
+         */
+        array: boolean;
+        /**
+         * Default value for attribute when not provided. Cannot be set when attribute is required.
+         */
+        xdefault: boolean;
+    }
+    /**
+     * AttributeEmail
+     */
+    export type AttributeEmail<> = {
+        /**
+         * Attribute Key.
+         */
+        key: string;
+        /**
+         * Attribute type.
+         */
+        type: string;
+        /**
+         * Attribute status. Possible values: `available`, `processing`, `deleting`, `stuck`, or `failed`
+         */
+        status: string;
+        /**
+         * Is attribute required?
+         */
+        required: boolean;
+        /**
+         * Is attribute an array?
+         */
+        array: boolean;
+        /**
+         * String format.
+         */
+        format: string;
+        /**
+         * Default value for attribute when not provided. Cannot be set when attribute is required.
+         */
+        xdefault: string;
+    }
+    /**
+     * AttributeEnum
+     */
+    export type AttributeEnum<> = {
+        /**
+         * Attribute Key.
+         */
+        key: string;
+        /**
+         * Attribute type.
+         */
+        type: string;
+        /**
+         * Attribute status. Possible values: `available`, `processing`, `deleting`, `stuck`, or `failed`
+         */
+        status: string;
+        /**
+         * Is attribute required?
+         */
+        required: boolean;
+        /**
+         * Is attribute an array?
+         */
+        array: boolean;
+        /**
+         * Array of elements in enumerated type.
+         */
+        elements: string[];
+        /**
+         * String format.
+         */
+        format: string;
+        /**
+         * Default value for attribute when not provided. Cannot be set when attribute is required.
+         */
+        xdefault: string;
+    }
+    /**
+     * AttributeIP
+     */
+    export type AttributeIp<> = {
+        /**
+         * Attribute Key.
+         */
+        key: string;
+        /**
+         * Attribute type.
+         */
+        type: string;
+        /**
+         * Attribute status. Possible values: `available`, `processing`, `deleting`, `stuck`, or `failed`
+         */
+        status: string;
+        /**
+         * Is attribute required?
+         */
+        required: boolean;
+        /**
+         * Is attribute an array?
+         */
+        array: boolean;
+        /**
+         * String format.
+         */
+        format: string;
+        /**
+         * Default value for attribute when not provided. Cannot be set when attribute is required.
+         */
+        xdefault: string;
+    }
+    /**
+     * AttributeURL
+     */
+    export type AttributeUrl<> = {
+        /**
+         * Attribute Key.
+         */
+        key: string;
+        /**
+         * Attribute type.
+         */
+        type: string;
+        /**
+         * Attribute status. Possible values: `available`, `processing`, `deleting`, `stuck`, or `failed`
+         */
+        status: string;
+        /**
+         * Is attribute required?
+         */
+        required: boolean;
+        /**
+         * Is attribute an array?
+         */
+        array: boolean;
+        /**
+         * String format.
+         */
+        format: string;
+        /**
+         * Default value for attribute when not provided. Cannot be set when attribute is required.
+         */
+        xdefault: string;
+    }
+    /**
+     * Index
+     */
+    export type Index<> = {
+        /**
+         * Index Key.
+         */
+        key: string;
+        /**
+         * Index type.
+         */
+        type: string;
+        /**
+         * Index status. Possible values: `available`, `processing`, `deleting`, `stuck`, or `failed`
+         */
+        status: string;
+        /**
+         * Index attributes.
+         */
+        attributes: string[];
+        /**
+         * Index orders.
+         */
+        orders: string[];
+    }
+    /**
+     * Document
+     */
+    export type Document<> = {
+        /**
+         * Document ID.
+         */
+        $id: string;
+        /**
+         * Collection ID.
+         */
+        $collection: string;
+        /**
+         * Document read permissions.
+         */
+        $read: string[];
+        /**
+         * Document write permissions.
+         */
+        $write: string[];
+    }
+    /**
+     * Log
+     */
+    export type Log<> = {
+        /**
+         * Event name.
+         */
+        event: string;
+        /**
+         * User ID.
+         */
+        userId: string;
+        /**
+         * User Email.
+         */
+        userEmail: string;
+        /**
+         * User Name.
+         */
+        userName: string;
+        /**
+         * API mode when event triggered.
+         */
+        mode: string;
+        /**
+         * IP session in use when the session was created.
+         */
+        ip: string;
+        /**
+         * Log creation time in Unix timestamp.
+         */
+        time: number;
+        /**
+         * Operating system code name. View list of [available options](https://github.com/appwrite/appwrite/blob/master/docs/lists/os.json).
+         */
+        osCode: string;
+        /**
+         * Operating system name.
+         */
+        osName: string;
+        /**
+         * Operating system version.
+         */
+        osVersion: string;
+        /**
+         * Client type.
+         */
+        clientType: string;
+        /**
+         * Client code name. View list of [available options](https://github.com/appwrite/appwrite/blob/master/docs/lists/clients.json).
+         */
+        clientCode: string;
+        /**
+         * Client name.
+         */
+        clientName: string;
+        /**
+         * Client version.
+         */
+        clientVersion: string;
+        /**
+         * Client engine name.
+         */
+        clientEngine: string;
+        /**
+         * Client engine name.
+         */
+        clientEngineVersion: string;
+        /**
+         * Device name.
+         */
+        deviceName: string;
+        /**
+         * Device brand name.
+         */
+        deviceBrand: string;
+        /**
+         * Device model name.
+         */
+        deviceModel: string;
+        /**
+         * Country two-character ISO 3166-1 alpha code.
+         */
+        countryCode: string;
+        /**
+         * Country name.
+         */
+        countryName: string;
+    }
+    /**
+     * User
+     */
+    export type User<Preferences extends Models.Preferences> = {
+        /**
+         * User ID.
+         */
+        $id: string;
+        /**
+         * User name.
+         */
+        name: string;
+        /**
+         * User registration date in Unix timestamp.
+         */
+        registration: number;
+        /**
+         * User status. Pass `true` for enabled and `false` for disabled.
+         */
+        status: boolean;
+        /**
+         * Unix timestamp of the most recent password update
+         */
+        passwordUpdate: number;
+        /**
+         * User email address.
+         */
+        email: string;
+        /**
+         * Email verification status.
+         */
+        emailVerification: boolean;
+        /**
+         * User preferences as a key-value object
+         */
+        prefs: Preferences;
+    }
+    /**
+     * Preferences
+     */
+    export type Preferences<> = {
+    }
+    /**
+     * Session
+     */
+    export type Session<> = {
+        /**
+         * Session ID.
+         */
+        $id: string;
+        /**
+         * User ID.
+         */
+        userId: string;
+        /**
+         * Session expiration date in Unix timestamp.
+         */
+        expire: number;
+        /**
+         * Session Provider.
+         */
+        provider: string;
+        /**
+         * Session Provider User ID.
+         */
+        providerUid: string;
+        /**
+         * Session Provider Token.
+         */
+        providerToken: string;
+        /**
+         * IP in use when the session was created.
+         */
+        ip: string;
+        /**
+         * Operating system code name. View list of [available options](https://github.com/appwrite/appwrite/blob/master/docs/lists/os.json).
+         */
+        osCode: string;
+        /**
+         * Operating system name.
+         */
+        osName: string;
+        /**
+         * Operating system version.
+         */
+        osVersion: string;
+        /**
+         * Client type.
+         */
+        clientType: string;
+        /**
+         * Client code name. View list of [available options](https://github.com/appwrite/appwrite/blob/master/docs/lists/clients.json).
+         */
+        clientCode: string;
+        /**
+         * Client name.
+         */
+        clientName: string;
+        /**
+         * Client version.
+         */
+        clientVersion: string;
+        /**
+         * Client engine name.
+         */
+        clientEngine: string;
+        /**
+         * Client engine name.
+         */
+        clientEngineVersion: string;
+        /**
+         * Device name.
+         */
+        deviceName: string;
+        /**
+         * Device brand name.
+         */
+        deviceBrand: string;
+        /**
+         * Device model name.
+         */
+        deviceModel: string;
+        /**
+         * Country two-character ISO 3166-1 alpha code.
+         */
+        countryCode: string;
+        /**
+         * Country name.
+         */
+        countryName: string;
+        /**
+         * Returns true if this the current user session.
+         */
+        current: boolean;
+    }
+    /**
+     * Token
+     */
+    export type Token<> = {
+        /**
+         * Token ID.
+         */
+        $id: string;
+        /**
+         * User ID.
+         */
+        userId: string;
+        /**
+         * Token secret key. This will return an empty string unless the response is returned using an API key or as part of a webhook payload.
+         */
+        secret: string;
+        /**
+         * Token expiration date in Unix timestamp.
+         */
+        expire: number;
+    }
+    /**
+     * JWT
+     */
+    export type Jwt<> = {
+        /**
+         * JWT encoded string.
+         */
+        jwt: string;
+    }
+    /**
+     * Locale
+     */
+    export type Locale<> = {
+        /**
+         * User IP address.
+         */
+        ip: string;
+        /**
+         * Country code in [ISO 3166-1](http://en.wikipedia.org/wiki/ISO_3166-1) two-character format
+         */
+        countryCode: string;
+        /**
+         * Country name. This field support localization.
+         */
+        country: string;
+        /**
+         * Continent code. A two character continent code &quot;AF&quot; for Africa, &quot;AN&quot; for Antarctica, &quot;AS&quot; for Asia, &quot;EU&quot; for Europe, &quot;NA&quot; for North America, &quot;OC&quot; for Oceania, and &quot;SA&quot; for South America.
+         */
+        continentCode: string;
+        /**
+         * Continent name. This field support localization.
+         */
+        continent: string;
+        /**
+         * True if country is part of the Europian Union.
+         */
+        eu: boolean;
+        /**
+         * Currency code in [ISO 4217-1](http://en.wikipedia.org/wiki/ISO_4217) three-character format
+         */
+        currency: string;
+    }
+    /**
+     * File
+     */
+    export type File<> = {
+        /**
+         * File ID.
+         */
+        $id: string;
+        /**
+         * File read permissions.
+         */
+        $read: string[];
+        /**
+         * File write permissions.
+         */
+        $write: string[];
+        /**
+         * File name.
+         */
+        name: string;
+        /**
+         * File creation date in Unix timestamp.
+         */
+        dateCreated: number;
+        /**
+         * File MD5 signature.
+         */
+        signature: string;
+        /**
+         * File mime type.
+         */
+        mimeType: string;
+        /**
+         * File original size in bytes.
+         */
+        sizeOriginal: number;
+    }
+    /**
+     * Team
+     */
+    export type Team<> = {
+        /**
+         * Team ID.
+         */
+        $id: string;
+        /**
+         * Team name.
+         */
+        name: string;
+        /**
+         * Team creation date in Unix timestamp.
+         */
+        dateCreated: number;
+        /**
+         * Total sum of team members.
+         */
+        sum: number;
+    }
+    /**
+     * Membership
+     */
+    export type Membership<> = {
+        /**
+         * Membership ID.
+         */
+        $id: string;
+        /**
+         * User ID.
+         */
+        userId: string;
+        /**
+         * Team ID.
+         */
+        teamId: string;
+        /**
+         * User name.
+         */
+        name: string;
+        /**
+         * User email address.
+         */
+        email: string;
+        /**
+         * Date, the user has been invited to join the team in Unix timestamp.
+         */
+        invited: number;
+        /**
+         * Date, the user has accepted the invitation to join the team in Unix timestamp.
+         */
+        joined: number;
+        /**
+         * User confirmation status, true if the user has joined the team or false otherwise.
+         */
+        confirm: boolean;
+        /**
+         * User list of roles
+         */
+        roles: string[];
+    }
+    /**
+     * Function
+     */
+    export type Function<> = {
+        /**
+         * Function ID.
+         */
+        $id: string;
+        /**
+         * Document execute permissions.
+         */
+        execute: string[];
+        /**
+         * Function name.
+         */
+        name: string;
+        /**
+         * Function creation date in Unix timestamp.
+         */
+        dateCreated: number;
+        /**
+         * Function update date in Unix timestamp.
+         */
+        dateUpdated: number;
+        /**
+         * Function status. Possible values: `disabled`, `enabled`
+         */
+        status: string;
+        /**
+         * Function execution runtime.
+         */
+        runtime: string;
+        /**
+         * Function active tag ID.
+         */
+        tag: string;
+        /**
+         * Function environment variables.
+         */
+        vars: string;
+        /**
+         * Function trigger events.
+         */
+        events: string[];
+        /**
+         * Function execution schedult in CRON format.
+         */
+        schedule: string;
+        /**
+         * Function next scheduled execution date in Unix timestamp.
+         */
+        scheduleNext: number;
+        /**
+         * Function next scheduled execution date in Unix timestamp.
+         */
+        schedulePrevious: number;
+        /**
+         * Function execution timeout in seconds.
+         */
+        timeout: number;
+    }
+    /**
+     * Tag
+     */
+    export type Tag<> = {
+        /**
+         * Tag ID.
+         */
+        $id: string;
+        /**
+         * Function ID.
+         */
+        functionId: string;
+        /**
+         * The tag creation date in Unix timestamp.
+         */
+        dateCreated: number;
+        /**
+         * The entrypoint command in use to execute the tag code.
+         */
+        command: string;
+        /**
+         * The code size in bytes.
+         */
+        size: string;
+    }
+    /**
+     * Execution
+     */
+    export type Execution<> = {
+        /**
+         * Execution ID.
+         */
+        $id: string;
+        /**
+         * Execution read permissions.
+         */
+        $read: string[];
+        /**
+         * Function ID.
+         */
+        functionId: string;
+        /**
+         * The execution creation date in Unix timestamp.
+         */
+        dateCreated: number;
+        /**
+         * The trigger that caused the function to execute. Possible values can be: `http`, `schedule`, or `event`.
+         */
+        trigger: string;
+        /**
+         * The status of the function execution. Possible values can be: `waiting`, `processing`, `completed`, or `failed`.
+         */
+        status: string;
+        /**
+         * The script exit code.
+         */
+        exitCode: number;
+        /**
+         * The script stdout output string. Logs the last 4,000 characters of the execution stdout output.
+         */
+        stdout: string;
+        /**
+         * The script stderr output string. Logs the last 4,000 characters of the execution stderr output
+         */
+        stderr: string;
+        /**
+         * The script execution time in seconds.
+         */
+        time: number;
+    }
+    /**
+     * Country
+     */
+    export type Country<> = {
+        /**
+         * Country name.
+         */
+        name: string;
+        /**
+         * Country two-character ISO 3166-1 alpha code.
+         */
+        code: string;
+    }
+    /**
+     * Continent
+     */
+    export type Continent<> = {
+        /**
+         * Continent name.
+         */
+        name: string;
+        /**
+         * Continent two letter code.
+         */
+        code: string;
+    }
+    /**
+     * Language
+     */
+    export type Language<> = {
+        /**
+         * Language name.
+         */
+        name: string;
+        /**
+         * Language two-character ISO 639-1 codes.
+         */
+        code: string;
+        /**
+         * Language native name.
+         */
+        nativeName: string;
+    }
+    /**
+     * Currency
+     */
+    export type Currency<> = {
+        /**
+         * Currency symbol.
+         */
+        symbol: string;
+        /**
+         * Currency name.
+         */
+        name: string;
+        /**
+         * Currency native symbol.
+         */
+        symbolNative: string;
+        /**
+         * Number of decimal digits.
+         */
+        decimalDigits: number;
+        /**
+         * Currency digit rounding.
+         */
+        rounding: number;
+        /**
+         * Currency code in [ISO 4217-1](http://en.wikipedia.org/wiki/ISO_4217) three-character format.
+         */
+        code: string;
+        /**
+         * Currency plural name
+         */
+        namePlural: string;
+    }
+    /**
+     * Phone
+     */
+    export type Phone<> = {
+        /**
+         * Phone code.
+         */
+        code: string;
+        /**
+         * Country two-character ISO 3166-1 alpha code.
+         */
+        countryCode: string;
+        /**
+         * Country name.
+         */
+        countryName: string;
+    }
+}
+
 type Payload = {
     [key: string]: any;
 }
@@ -6,8 +1125,62 @@ type Headers = {
     [key: string]: string;
 }
 
-const FormData = typeof window === 'undefined' ? require('form-data') : window.FormData; 
-const fetch = typeof window === 'undefined' ? require('cross-fetch') : window.fetch; 
+type RealtimeResponse = {
+    type: 'error'|'event'|'connected'|'response';
+    data: RealtimeResponseAuthenticated|RealtimeResponseConnected|RealtimeResponseError|RealtimeResponseEvent<unknown>;
+}
+
+type RealtimeRequest = {
+    type: 'authentication';
+    data: RealtimeRequestAuthenticate;
+}
+
+export type RealtimeResponseEvent<T extends unknown> = {
+    event: string;
+    channels: string[];
+    timestamp: number;
+    payload: T;
+}
+
+type RealtimeResponseError = {
+    code: number;
+    message: string;
+}
+
+type RealtimeResponseConnected = {
+    channels: string[];
+    user?: object;
+}
+
+type RealtimeResponseAuthenticated = {
+    to: string;
+    success: boolean;
+    user: object;
+}
+
+type RealtimeRequestAuthenticate = {
+    session: string;
+}
+
+type Realtime = {
+    socket?: WebSocket;
+    timeout?: number;
+    url?: string;
+    lastMessage?: RealtimeResponse;
+    channels: Set<string>;
+    subscriptions: Map<number, {
+        channels: string[];
+        callback: (payload: RealtimeResponseEvent<any>) => void
+    }>;
+    subscriptionsCounter: number;
+    reconnect: boolean;
+    reconnectAttempts: number;
+    getTimeout: () => number;
+    connect: () => void;
+    createSocket: () => void;
+    cleanUp: (channels: string[]) => void;
+    onMessage: (event: MessageEvent) => void;
+}
 
 class AppwriteException extends Error {
     code: number;
@@ -24,19 +1197,20 @@ class AppwriteException extends Error {
 class Appwrite {
     config = {
         endpoint: 'https://appwrite.io/v1',
+        endpointRealtime: '',
         project: '',
         jwt: '',
         locale: '',
     };
     headers: Headers = {
-        'x-sdk-version': 'appwrite:web:3.0.0',
-        'X-Appwrite-Response-Format': '0.8.0',
+        'x-sdk-version': 'appwrite:web:5.0.0',
+        'X-Appwrite-Response-Format': '0.11.0',
     };
 
     /**
      * Set Endpoint
      *
-     * Your project ID
+     * Your project endpoint
      *
      * @param {string} endpoint
      *
@@ -44,6 +1218,20 @@ class Appwrite {
      */
     setEndpoint(endpoint: string): this {
         this.config.endpoint = endpoint;
+        this.config.endpointRealtime = this.config.endpointRealtime || this.config.endpoint.replace('https://', 'wss://').replace('http://', 'ws://');
+
+        return this;
+    }
+
+    /**
+     * Set Realtime Endpoint
+     *
+     * @param {string} endpointRealtime
+     *
+     * @returns {this}
+     */
+    setEndpointRealtime(endpointRealtime: string): this {
+        this.config.endpointRealtime = endpointRealtime;
 
         return this;
     }
@@ -91,6 +1279,186 @@ class Appwrite {
         return this;
     }
 
+
+    private realtime: Realtime = {
+        socket: undefined,
+        timeout: undefined,
+        url: '',
+        channels: new Set(),
+        subscriptions: new Map(),
+        subscriptionsCounter: 0,
+        reconnect: true,
+        reconnectAttempts: 0,
+        lastMessage: undefined,
+        connect: () => {
+            clearTimeout(this.realtime.timeout);
+            this.realtime.timeout = window?.setTimeout(() => {
+                this.realtime.createSocket();
+            }, 50);
+        },
+        getTimeout: () => {
+            switch (true) {
+                case this.realtime.reconnectAttempts < 5:
+                    return 1000;
+                case this.realtime.reconnectAttempts < 15:
+                    return 5000;
+                case this.realtime.reconnectAttempts < 100:
+                    return 10_000;
+                default:
+                    return 60_000;
+            }
+        },
+        createSocket: () => {
+            if (this.realtime.channels.size < 1) return;
+
+            const channels = new URLSearchParams();
+            channels.set('project', this.config.project);
+            this.realtime.channels.forEach(channel => {
+                channels.append('channels[]', channel);
+            });
+
+            const url = this.config.endpointRealtime + '/realtime?' + channels.toString();
+
+            if (
+                url !== this.realtime.url || // Check if URL is present
+                !this.realtime.socket || // Check if WebSocket has not been created
+                this.realtime.socket?.readyState > WebSocket.OPEN // Check if WebSocket is CLOSING (3) or CLOSED (4)
+            ) {
+                if (
+                    this.realtime.socket &&
+                    this.realtime.socket?.readyState < WebSocket.CLOSING // Close WebSocket if it is CONNECTING (0) or OPEN (1)
+                ) {
+                    this.realtime.reconnect = false;
+                    this.realtime.socket.close();
+                }
+
+                this.realtime.url = url;
+                this.realtime.socket = new WebSocket(url);
+                this.realtime.socket.addEventListener('message', this.realtime.onMessage);
+                this.realtime.socket.addEventListener('open', _event => {
+                    this.realtime.reconnectAttempts = 0;
+                });
+                this.realtime.socket.addEventListener('close', event => {
+                    if (
+                        !this.realtime.reconnect ||
+                        (
+                            this.realtime?.lastMessage?.type === 'error' && // Check if last message was of type error
+                            (<RealtimeResponseError>this.realtime?.lastMessage.data).code === 1008 // Check for policy violation 1008
+                        )
+                    ) {
+                        this.realtime.reconnect = true;
+                        return;
+                    }
+
+                    const timeout = this.realtime.getTimeout();
+                    console.error(`Realtime got disconnected. Reconnect will be attempted in ${timeout / 1000} seconds.`, event.reason);
+
+                    setTimeout(() => {
+                        this.realtime.reconnectAttempts++;
+                        this.realtime.createSocket();
+                    }, timeout);
+                })
+            }
+        },
+        onMessage: (event) => {
+            try {
+                const message: RealtimeResponse = JSON.parse(event.data);
+                this.realtime.lastMessage = message;
+                switch (message.type) {
+                    case 'connected':
+                        const cookie = JSON.parse(window.localStorage.getItem('cookieFallback') ?? '{}');
+                        const session = cookie?.[`a_session_${this.config.project}`];
+                        const messageData = <RealtimeResponseConnected>message.data;
+
+                        if (session && !messageData.user) {
+                            this.realtime.socket?.send(JSON.stringify(<RealtimeRequest>{
+                                type: 'authentication',
+                                data: {
+                                    session
+                                }
+                            }));
+                        }
+                        break;
+                    case 'event':
+                        let data = <RealtimeResponseEvent<unknown>>message.data;
+                        if (data?.channels) {
+                            const isSubscribed = data.channels.some(channel => this.realtime.channels.has(channel));
+                            if (!isSubscribed) return;
+                            this.realtime.subscriptions.forEach(subscription => {
+                                if (data.channels.some(channel => subscription.channels.includes(channel))) {
+                                    setTimeout(() => subscription.callback(data));
+                                }
+                            })
+                        }
+                        break;
+                    case 'error':
+                        throw message.data;
+                    default:
+                        break;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        },
+        cleanUp: channels => {
+            this.realtime.channels.forEach(channel => {
+                if (channels.includes(channel)) {
+                    let found = Array.from(this.realtime.subscriptions).some(([_key, subscription] )=> {
+                        return subscription.channels.includes(channel);
+                    })
+
+                    if (!found) {
+                        this.realtime.channels.delete(channel);
+                    }
+                }
+            })
+        }
+    }
+
+    /**
+     * Subscribes to Appwrite events and passes you the payload in realtime.
+     * 
+     * @param {string|string[]} channels 
+     * Channel to subscribe - pass a single channel as a string or multiple with an array of strings.
+     * 
+     * Possible channels are:
+     * - account
+     * - collections
+     * - collections.[ID]
+     * - collections.[ID].documents
+     * - documents
+     * - documents.[ID]
+     * - files
+     * - files.[ID]
+     * - executions
+     * - executions.[ID]
+     * - functions.[ID]
+     * - teams
+     * - teams.[ID]
+     * - memberships
+     * - memberships.[ID]
+     * @param {(payload: RealtimeMessage) => void} callback Is called on every realtime update.
+     * @returns {() => void} Unsubscribes from events.
+     */
+    subscribe<T extends unknown>(channels: string | string[], callback: (payload: RealtimeResponseEvent<T>) => void): () => void {
+        let channelArray = typeof channels === 'string' ? [channels] : channels;
+        channelArray.forEach(channel => this.realtime.channels.add(channel));
+
+        const counter = this.realtime.subscriptionsCounter++;
+        this.realtime.subscriptions.set(counter, {
+            channels: channelArray,
+            callback
+        });
+
+        this.realtime.connect();
+
+        return () => {
+            this.realtime.subscriptions.delete(counter);
+            this.realtime.cleanUp(channelArray);
+            this.realtime.connect();
+        }
+    }
+
     private async call(method: string, url: URL, headers: Headers = {}, params: Payload = {}): Promise<any> {
         method = method.toUpperCase();
         headers = {
@@ -104,11 +1472,13 @@ class Appwrite {
         };
 
         if (typeof window !== 'undefined' && window.localStorage) {
-            headers['X-Fallback-Cookies'] = window.localStorage.getItem('cookieFallback') ?? "";
+            headers['X-Fallback-Cookies'] = window.localStorage.getItem('cookieFallback') ?? '';
         }
 
         if (method === 'GET') {
-            url.search = new URLSearchParams(this.flatten(params)).toString();
+            for (const [key, value] of Object.entries(this.flatten(params))) {
+                url.searchParams.append(key, value);
+            }
         } else {
             switch (headers['content-type']) {
                 case 'application/json':
@@ -120,7 +1490,9 @@ class Appwrite {
 
                     for (const key in params) {
                         if (Array.isArray(params[key])) {
-                            formData.append(key + '[]', params[key].join(','));
+                            params[key].forEach((value: any) => {
+                                formData.append(key + '[]', value);
+                            })
                         } else {
                             formData.append(key, params[key]);
                         }
@@ -136,14 +1508,14 @@ class Appwrite {
             let data = null;
             const response = await fetch(url.toString(), options);
 
-            if (response.headers.get("content-type")?.includes("application/json")) {
+            if (response.headers.get('content-type')?.includes('application/json')) {
                 data = await response.json();
             } else {
                 data = {
                     message: await response.text()
                 };
             }
-            
+
             if (400 <= response.status) {
                 throw new AppwriteException(data?.message, response.status, data);
             }
@@ -157,7 +1529,10 @@ class Appwrite {
 
             return data;
         } catch (e) {
-            throw new AppwriteException(e.message);
+            if (e instanceof AppwriteException) {
+                throw e;
+            }
+            throw new AppwriteException((<Error>e).message);
         }
     }
 
@@ -189,7 +1564,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        get: async <T extends unknown>(): Promise<T> => {
+        get: async <Preferences extends Models.Preferences>(): Promise<Models.User<Preferences>> => {
             let path = '/account';
             let payload: Payload = {};
 
@@ -209,23 +1584,32 @@ class Appwrite {
          * login to their new account, you need to create a new [account
          * session](/docs/client/account#accountCreateSession).
          *
+         * @param {string} userId
          * @param {string} email
          * @param {string} password
          * @param {string} name
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        create: async <T extends unknown>(email: string, password: string, name: string = ''): Promise<T> => {
-            if (email === undefined) {
+        create: async <Preferences extends Models.Preferences>(userId: string, email: string, password: string, name?: string): Promise<Models.User<Preferences>> => {
+            if (typeof userId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "userId"');
+            }
+
+            if (typeof email === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "email"');
             }
 
-            if (password === undefined) {
+            if (typeof password === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "password"');
             }
 
             let path = '/account';
             let payload: Payload = {};
+
+            if (typeof userId !== 'undefined') {
+                payload['userId'] = userId;
+            }
 
             if (typeof email !== 'undefined') {
                 payload['email'] = email;
@@ -257,7 +1641,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        delete: async <T extends unknown>(): Promise<T> => {
+        delete: async (): Promise<{}> => {
             let path = '/account';
             let payload: Payload = {};
 
@@ -282,12 +1666,12 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updateEmail: async <T extends unknown>(email: string, password: string): Promise<T> => {
-            if (email === undefined) {
+        updateEmail: async <Preferences extends Models.Preferences>(email: string, password: string): Promise<Models.User<Preferences>> => {
+            if (typeof email === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "email"');
             }
 
-            if (password === undefined) {
+            if (typeof password === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "password"');
             }
 
@@ -314,12 +1698,13 @@ class Appwrite {
          * Use this endpoint to create a JSON Web Token. You can use the resulting JWT
          * to authenticate on behalf of the current user when working with the
          * Appwrite server-side API and SDKs. The JWT secret is valid for 15 minutes
-         * from its creation and will be invalid if the user will logout.
+         * from its creation and will be invalid if the user will logout in that time
+         * frame.
          *
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createJWT: async <T extends unknown>(): Promise<T> => {
+        createJWT: async (): Promise<Models.Jwt> => {
             let path = '/account/jwt';
             let payload: Payload = {};
 
@@ -338,7 +1723,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getLogs: async <T extends unknown>(): Promise<T> => {
+        getLogs: async (): Promise<Models.LogList> => {
             let path = '/account/logs';
             let payload: Payload = {};
 
@@ -357,8 +1742,8 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updateName: async <T extends unknown>(name: string): Promise<T> => {
-            if (name === undefined) {
+        updateName: async <Preferences extends Models.Preferences>(name: string): Promise<Models.User<Preferences>> => {
+            if (typeof name === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "name"');
             }
 
@@ -387,8 +1772,8 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updatePassword: async <T extends unknown>(password: string, oldPassword: string = ''): Promise<T> => {
-            if (password === undefined) {
+        updatePassword: async <Preferences extends Models.Preferences>(password: string, oldPassword?: string): Promise<Models.User<Preferences>> => {
+            if (typeof password === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "password"');
             }
 
@@ -417,7 +1802,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getPrefs: async <T extends unknown>(): Promise<T> => {
+        getPrefs: async <Preferences extends Models.Preferences>(): Promise<Preferences> => {
             let path = '/account/prefs';
             let payload: Payload = {};
 
@@ -437,8 +1822,8 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updatePrefs: async <T extends unknown>(prefs: object): Promise<T> => {
-            if (prefs === undefined) {
+        updatePrefs: async <Preferences extends Models.Preferences>(prefs: object): Promise<Models.User<Preferences>> => {
+            if (typeof prefs === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "prefs"');
             }
 
@@ -472,12 +1857,12 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createRecovery: async <T extends unknown>(email: string, url: string): Promise<T> => {
-            if (email === undefined) {
+        createRecovery: async (email: string, url: string): Promise<Models.Token> => {
+            if (typeof email === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "email"');
             }
 
-            if (url === undefined) {
+            if (typeof url === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "url"');
             }
 
@@ -499,7 +1884,7 @@ class Appwrite {
         },
 
         /**
-         * Complete Password Recovery
+         * Create Password Recovery (confirmation)
          *
          * Use this endpoint to complete the user account password reset. Both the
          * **userId** and **secret** arguments will be passed as query parameters to
@@ -518,20 +1903,20 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updateRecovery: async <T extends unknown>(userId: string, secret: string, password: string, passwordAgain: string): Promise<T> => {
-            if (userId === undefined) {
+        updateRecovery: async (userId: string, secret: string, password: string, passwordAgain: string): Promise<Models.Token> => {
+            if (typeof userId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "userId"');
             }
 
-            if (secret === undefined) {
+            if (typeof secret === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "secret"');
             }
 
-            if (password === undefined) {
+            if (typeof password === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "password"');
             }
 
-            if (passwordAgain === undefined) {
+            if (typeof passwordAgain === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "passwordAgain"');
             }
 
@@ -569,7 +1954,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getSessions: async <T extends unknown>(): Promise<T> => {
+        getSessions: async (): Promise<Models.SessionList> => {
             let path = '/account/sessions';
             let payload: Payload = {};
 
@@ -590,12 +1975,12 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createSession: async <T extends unknown>(email: string, password: string): Promise<T> => {
-            if (email === undefined) {
+        createSession: async (email: string, password: string): Promise<Models.Session> => {
+            if (typeof email === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "email"');
             }
 
-            if (password === undefined) {
+            if (typeof password === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "password"');
             }
 
@@ -625,7 +2010,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        deleteSessions: async <T extends unknown>(): Promise<T> => {
+        deleteSessions: async (): Promise<{}> => {
             let path = '/account/sessions';
             let payload: Payload = {};
 
@@ -640,19 +2025,116 @@ class Appwrite {
          *
          * Use this endpoint to allow a new user to register an anonymous account in
          * your project. This route will also create a new session for the user. To
-         * allow the new user to convert an anonymous account to a normal account
-         * account, you need to update its [email and
-         * password](/docs/client/account#accountUpdateEmail).
+         * allow the new user to convert an anonymous account to a normal account, you
+         * need to update its [email and
+         * password](/docs/client/account#accountUpdateEmail) or create an [OAuth2
+         * session](/docs/client/account#accountCreateOAuth2Session).
          *
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createAnonymousSession: async <T extends unknown>(): Promise<T> => {
+        createAnonymousSession: async (): Promise<Models.Session> => {
             let path = '/account/sessions/anonymous';
             let payload: Payload = {};
 
             const uri = new URL(this.config.endpoint + path);
             return await this.call('post', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
+         * Create Magic URL session
+         *
+         * Sends the user an email with a secret key for creating a session. When the
+         * user clicks the link in the email, the user is redirected back to the URL
+         * you provided with the secret key and userId values attached to the URL
+         * query string. Use the query string parameters to submit a request to the
+         * [PUT
+         * /account/sessions/magic-url](/docs/client/account#accountUpdateMagicURLSession)
+         * endpoint to complete the login process. The link sent to the user's email
+         * address is valid for 1 hour. If you are on a mobile device you can leave
+         * the URL parameter empty, so that the login completion will be handled by
+         * your Appwrite instance by default.
+         *
+         * @param {string} userId
+         * @param {string} email
+         * @param {string} url
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        createMagicURLSession: async (userId: string, email: string, url?: string): Promise<Models.Token> => {
+            if (typeof userId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "userId"');
+            }
+
+            if (typeof email === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "email"');
+            }
+
+            let path = '/account/sessions/magic-url';
+            let payload: Payload = {};
+
+            if (typeof userId !== 'undefined') {
+                payload['userId'] = userId;
+            }
+
+            if (typeof email !== 'undefined') {
+                payload['email'] = email;
+            }
+
+            if (typeof url !== 'undefined') {
+                payload['url'] = url;
+            }
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('post', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
+         * Create Magic URL session (confirmation)
+         *
+         * Use this endpoint to complete creating the session with the Magic URL. Both
+         * the **userId** and **secret** arguments will be passed as query parameters
+         * to the redirect URL you have provided when sending your request to the
+         * [POST
+         * /account/sessions/magic-url](/docs/client/account#accountCreateMagicURLSession)
+         * endpoint.
+         * 
+         * Please note that in order to avoid a [Redirect
+         * Attack](https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.md)
+         * the only valid redirect URLs are the ones from domains you have set when
+         * adding your platforms in the console interface.
+         *
+         * @param {string} userId
+         * @param {string} secret
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        updateMagicURLSession: async (userId: string, secret: string): Promise<Models.Session> => {
+            if (typeof userId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "userId"');
+            }
+
+            if (typeof secret === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "secret"');
+            }
+
+            let path = '/account/sessions/magic-url';
+            let payload: Payload = {};
+
+            if (typeof userId !== 'undefined') {
+                payload['userId'] = userId;
+            }
+
+            if (typeof secret !== 'undefined') {
+                payload['secret'] = secret;
+            }
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('put', uri, {
                 'content-type': 'application/json',
             }, payload);
         },
@@ -664,6 +2146,14 @@ class Appwrite {
          * choice. Each OAuth2 provider should be enabled from the Appwrite console
          * first. Use the success and failure arguments to provide a redirect URL's
          * back to your app when login is completed.
+         * 
+         * If there is already an active session, the new session will be attached to
+         * the logged-in account. If there are no active sessions, the server will
+         * attempt to look for a user with the same email address as the email
+         * received from the OAuth2 provider and attach the new session to the
+         * existing user. If no matching user is found - the server will create a new
+         * user..
+         * 
          *
          * @param {string} provider
          * @param {string} success
@@ -672,23 +2162,23 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {void|string}
          */
-        createOAuth2Session: (provider: string, success: string = 'https://appwrite.io/auth/oauth2/success', failure: string = 'https://appwrite.io/auth/oauth2/failure', scopes: string[] = []): void | URL => {
-            if (provider === undefined) {
+        createOAuth2Session: (provider: string, success?: string, failure?: string, scopes?: string[]): void | URL => {
+            if (typeof provider === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "provider"');
             }
 
             let path = '/account/sessions/oauth2/{provider}'.replace('{provider}', provider);
             let payload: Payload = {};
 
-            if (success) {
+            if (typeof success !== 'undefined') {
                 payload['success'] = success;
             }
 
-            if (failure) {
+            if (typeof failure !== 'undefined') {
                 payload['failure'] = failure;
             }
 
-            if (scopes) {
+            if (typeof scopes !== 'undefined') {
                 payload['scopes'] = scopes;
             }
 
@@ -696,13 +2186,38 @@ class Appwrite {
             payload['project'] = this.config.project;
 
 
-            const query = new URLSearchParams(payload);
-            uri.search = query.toString();
-            if (window?.location) {
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
+            if (typeof window !== 'undefined' && window?.location) {
                 window.location.href = uri.toString();
             } else {
                 return uri;
             }
+        },
+
+        /**
+         * Get Session By ID
+         *
+         * Use this endpoint to get a logged in user's session using a Session ID.
+         * Inputting 'current' will return the current session being used.
+         *
+         * @param {string} sessionId
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        getSession: async (sessionId: string): Promise<Models.Session> => {
+            if (typeof sessionId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "sessionId"');
+            }
+
+            let path = '/account/sessions/{sessionId}'.replace('{sessionId}', sessionId);
+            let payload: Payload = {};
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('get', uri, {
+                'content-type': 'application/json',
+            }, payload);
         },
 
         /**
@@ -716,8 +2231,8 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        deleteSession: async <T extends unknown>(sessionId: string): Promise<T> => {
-            if (sessionId === undefined) {
+        deleteSession: async (sessionId: string): Promise<{}> => {
+            if (typeof sessionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "sessionId"');
             }
 
@@ -753,8 +2268,8 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createVerification: async <T extends unknown>(url: string): Promise<T> => {
-            if (url === undefined) {
+        createVerification: async (url: string): Promise<Models.Token> => {
+            if (typeof url === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "url"');
             }
 
@@ -772,7 +2287,7 @@ class Appwrite {
         },
 
         /**
-         * Complete Email Verification
+         * Create Email Verification (confirmation)
          *
          * Use this endpoint to complete the user email verification process. Use both
          * the **userId** and **secret** parameters that were attached to your app URL
@@ -784,12 +2299,12 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updateVerification: async <T extends unknown>(userId: string, secret: string): Promise<T> => {
-            if (userId === undefined) {
+        updateVerification: async (userId: string, secret: string): Promise<Models.Token> => {
+            if (typeof userId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "userId"');
             }
 
-            if (secret === undefined) {
+            if (typeof secret === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "secret"');
             }
 
@@ -828,34 +2343,33 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {URL}
          */
-        getBrowser: (code: string, width: number = 100, height: number = 100, quality: number = 100): URL => {
-            if (code === undefined) {
+        getBrowser: (code: string, width?: number, height?: number, quality?: number): URL => {
+            if (typeof code === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "code"');
             }
 
             let path = '/avatars/browsers/{code}'.replace('{code}', code);
             let payload: Payload = {};
 
-            if (width) {
+            if (typeof width !== 'undefined') {
                 payload['width'] = width;
             }
 
-            if (height) {
+            if (typeof height !== 'undefined') {
                 payload['height'] = height;
             }
 
-            if (quality) {
+            if (typeof quality !== 'undefined') {
                 payload['quality'] = quality;
             }
 
             const uri = new URL(this.config.endpoint + path);
             payload['project'] = this.config.project;
 
-            payload['jwt'] = this.config.jwt;
 
-
-            const query = new URLSearchParams(payload);
-            uri.search = query.toString();
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
             return uri;
         },
 
@@ -873,34 +2387,33 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {URL}
          */
-        getCreditCard: (code: string, width: number = 100, height: number = 100, quality: number = 100): URL => {
-            if (code === undefined) {
+        getCreditCard: (code: string, width?: number, height?: number, quality?: number): URL => {
+            if (typeof code === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "code"');
             }
 
             let path = '/avatars/credit-cards/{code}'.replace('{code}', code);
             let payload: Payload = {};
 
-            if (width) {
+            if (typeof width !== 'undefined') {
                 payload['width'] = width;
             }
 
-            if (height) {
+            if (typeof height !== 'undefined') {
                 payload['height'] = height;
             }
 
-            if (quality) {
+            if (typeof quality !== 'undefined') {
                 payload['quality'] = quality;
             }
 
             const uri = new URL(this.config.endpoint + path);
             payload['project'] = this.config.project;
 
-            payload['jwt'] = this.config.jwt;
 
-
-            const query = new URLSearchParams(payload);
-            uri.search = query.toString();
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
             return uri;
         },
 
@@ -916,25 +2429,24 @@ class Appwrite {
          * @returns {URL}
          */
         getFavicon: (url: string): URL => {
-            if (url === undefined) {
+            if (typeof url === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "url"');
             }
 
             let path = '/avatars/favicon';
             let payload: Payload = {};
 
-            if (url) {
+            if (typeof url !== 'undefined') {
                 payload['url'] = url;
             }
 
             const uri = new URL(this.config.endpoint + path);
             payload['project'] = this.config.project;
 
-            payload['jwt'] = this.config.jwt;
 
-
-            const query = new URLSearchParams(payload);
-            uri.search = query.toString();
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
             return uri;
         },
 
@@ -952,34 +2464,33 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {URL}
          */
-        getFlag: (code: string, width: number = 100, height: number = 100, quality: number = 100): URL => {
-            if (code === undefined) {
+        getFlag: (code: string, width?: number, height?: number, quality?: number): URL => {
+            if (typeof code === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "code"');
             }
 
             let path = '/avatars/flags/{code}'.replace('{code}', code);
             let payload: Payload = {};
 
-            if (width) {
+            if (typeof width !== 'undefined') {
                 payload['width'] = width;
             }
 
-            if (height) {
+            if (typeof height !== 'undefined') {
                 payload['height'] = height;
             }
 
-            if (quality) {
+            if (typeof quality !== 'undefined') {
                 payload['quality'] = quality;
             }
 
             const uri = new URL(this.config.endpoint + path);
             payload['project'] = this.config.project;
 
-            payload['jwt'] = this.config.jwt;
 
-
-            const query = new URLSearchParams(payload);
-            uri.search = query.toString();
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
             return uri;
         },
 
@@ -997,34 +2508,33 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {URL}
          */
-        getImage: (url: string, width: number = 400, height: number = 400): URL => {
-            if (url === undefined) {
+        getImage: (url: string, width?: number, height?: number): URL => {
+            if (typeof url === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "url"');
             }
 
             let path = '/avatars/image';
             let payload: Payload = {};
 
-            if (url) {
+            if (typeof url !== 'undefined') {
                 payload['url'] = url;
             }
 
-            if (width) {
+            if (typeof width !== 'undefined') {
                 payload['width'] = width;
             }
 
-            if (height) {
+            if (typeof height !== 'undefined') {
                 payload['height'] = height;
             }
 
             const uri = new URL(this.config.endpoint + path);
             payload['project'] = this.config.project;
 
-            payload['jwt'] = this.config.jwt;
 
-
-            const query = new URLSearchParams(payload);
-            uri.search = query.toString();
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
             return uri;
         },
 
@@ -1050,38 +2560,37 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {URL}
          */
-        getInitials: (name: string = '', width: number = 500, height: number = 500, color: string = '', background: string = ''): URL => {
+        getInitials: (name?: string, width?: number, height?: number, color?: string, background?: string): URL => {
             let path = '/avatars/initials';
             let payload: Payload = {};
 
-            if (name) {
+            if (typeof name !== 'undefined') {
                 payload['name'] = name;
             }
 
-            if (width) {
+            if (typeof width !== 'undefined') {
                 payload['width'] = width;
             }
 
-            if (height) {
+            if (typeof height !== 'undefined') {
                 payload['height'] = height;
             }
 
-            if (color) {
+            if (typeof color !== 'undefined') {
                 payload['color'] = color;
             }
 
-            if (background) {
+            if (typeof background !== 'undefined') {
                 payload['background'] = background;
             }
 
             const uri = new URL(this.config.endpoint + path);
             payload['project'] = this.config.project;
 
-            payload['jwt'] = this.config.jwt;
 
-
-            const query = new URLSearchParams(payload);
-            uri.search = query.toString();
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
             return uri;
         },
 
@@ -1098,38 +2607,37 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {URL}
          */
-        getQR: (text: string, size: number = 400, margin: number = 1, download: boolean = false): URL => {
-            if (text === undefined) {
+        getQR: (text: string, size?: number, margin?: number, download?: boolean): URL => {
+            if (typeof text === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "text"');
             }
 
             let path = '/avatars/qr';
             let payload: Payload = {};
 
-            if (text) {
+            if (typeof text !== 'undefined') {
                 payload['text'] = text;
             }
 
-            if (size) {
+            if (typeof size !== 'undefined') {
                 payload['size'] = size;
             }
 
-            if (margin) {
+            if (typeof margin !== 'undefined') {
                 payload['margin'] = margin;
             }
 
-            if (download) {
+            if (typeof download !== 'undefined') {
                 payload['download'] = download;
             }
 
             const uri = new URL(this.config.endpoint + path);
             payload['project'] = this.config.project;
 
-            payload['jwt'] = this.config.jwt;
 
-
-            const query = new URLSearchParams(payload);
-            uri.search = query.toString();
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
             return uri;
         }
     };
@@ -1145,50 +2653,50 @@ class Appwrite {
          * modes](/docs/admin).
          *
          * @param {string} collectionId
-         * @param {string[]} filters
+         * @param {string[]} queries
          * @param {number} limit
          * @param {number} offset
-         * @param {string} orderField
-         * @param {string} orderType
-         * @param {string} orderCast
-         * @param {string} search
+         * @param {string} cursor
+         * @param {string} cursorDirection
+         * @param {string[]} orderAttributes
+         * @param {string[]} orderTypes
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        listDocuments: async <T extends unknown>(collectionId: string, filters: string[] = [], limit: number = 25, offset: number = 0, orderField: string = '', orderType: string = 'ASC', orderCast: string = 'string', search: string = ''): Promise<T> => {
-            if (collectionId === undefined) {
+        listDocuments: async <Document extends Models.Document>(collectionId: string, queries?: string[], limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderAttributes?: string[], orderTypes?: string[]): Promise<Models.DocumentList<Document>> => {
+            if (typeof collectionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "collectionId"');
             }
 
             let path = '/database/collections/{collectionId}/documents'.replace('{collectionId}', collectionId);
             let payload: Payload = {};
 
-            if (filters) {
-                payload['filters'] = filters;
+            if (typeof queries !== 'undefined') {
+                payload['queries'] = queries;
             }
 
-            if (limit) {
+            if (typeof limit !== 'undefined') {
                 payload['limit'] = limit;
             }
 
-            if (offset) {
+            if (typeof offset !== 'undefined') {
                 payload['offset'] = offset;
             }
 
-            if (orderField) {
-                payload['orderField'] = orderField;
+            if (typeof cursor !== 'undefined') {
+                payload['cursor'] = cursor;
             }
 
-            if (orderType) {
-                payload['orderType'] = orderType;
+            if (typeof cursorDirection !== 'undefined') {
+                payload['cursorDirection'] = cursorDirection;
             }
 
-            if (orderCast) {
-                payload['orderCast'] = orderCast;
+            if (typeof orderAttributes !== 'undefined') {
+                payload['orderAttributes'] = orderAttributes;
             }
 
-            if (search) {
-                payload['search'] = search;
+            if (typeof orderTypes !== 'undefined') {
+                payload['orderTypes'] = orderTypes;
             }
 
             const uri = new URL(this.config.endpoint + path);
@@ -1206,26 +2714,32 @@ class Appwrite {
          * directly from your database console.
          *
          * @param {string} collectionId
+         * @param {string} documentId
          * @param {object} data
-         * @param {string[]} read
-         * @param {string[]} write
-         * @param {string} parentDocument
-         * @param {string} parentProperty
-         * @param {string} parentPropertyType
+         * @param {string} read
+         * @param {string} write
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createDocument: async <T extends unknown>(collectionId: string, data: object, read: string[] = [], write: string[] = [], parentDocument: string = '', parentProperty: string = '', parentPropertyType: string = 'assign'): Promise<T> => {
-            if (collectionId === undefined) {
+        createDocument: async <Document extends Models.Document>(collectionId: string, documentId: string, data: object, read?: string, write?: string): Promise<Document> => {
+            if (typeof collectionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "collectionId"');
             }
 
-            if (data === undefined) {
+            if (typeof documentId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "documentId"');
+            }
+
+            if (typeof data === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "data"');
             }
 
             let path = '/database/collections/{collectionId}/documents'.replace('{collectionId}', collectionId);
             let payload: Payload = {};
+
+            if (typeof documentId !== 'undefined') {
+                payload['documentId'] = documentId;
+            }
 
             if (typeof data !== 'undefined') {
                 payload['data'] = data;
@@ -1237,18 +2751,6 @@ class Appwrite {
 
             if (typeof write !== 'undefined') {
                 payload['write'] = write;
-            }
-
-            if (typeof parentDocument !== 'undefined') {
-                payload['parentDocument'] = parentDocument;
-            }
-
-            if (typeof parentProperty !== 'undefined') {
-                payload['parentProperty'] = parentProperty;
-            }
-
-            if (typeof parentPropertyType !== 'undefined') {
-                payload['parentPropertyType'] = parentPropertyType;
             }
 
             const uri = new URL(this.config.endpoint + path);
@@ -1268,12 +2770,12 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getDocument: async <T extends unknown>(collectionId: string, documentId: string): Promise<T> => {
-            if (collectionId === undefined) {
+        getDocument: async <Document extends Models.Document>(collectionId: string, documentId: string): Promise<Document> => {
+            if (typeof collectionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "collectionId"');
             }
 
-            if (documentId === undefined) {
+            if (typeof documentId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "documentId"');
             }
 
@@ -1295,21 +2797,21 @@ class Appwrite {
          * @param {string} collectionId
          * @param {string} documentId
          * @param {object} data
-         * @param {string[]} read
-         * @param {string[]} write
+         * @param {string} read
+         * @param {string} write
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updateDocument: async <T extends unknown>(collectionId: string, documentId: string, data: object, read: string[] = [], write: string[] = []): Promise<T> => {
-            if (collectionId === undefined) {
+        updateDocument: async <Document extends Models.Document>(collectionId: string, documentId: string, data: object, read?: string, write?: string): Promise<Document> => {
+            if (typeof collectionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "collectionId"');
             }
 
-            if (documentId === undefined) {
+            if (typeof documentId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "documentId"');
             }
 
-            if (data === undefined) {
+            if (typeof data === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "data"');
             }
 
@@ -1346,12 +2848,12 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        deleteDocument: async <T extends unknown>(collectionId: string, documentId: string): Promise<T> => {
-            if (collectionId === undefined) {
+        deleteDocument: async (collectionId: string, documentId: string): Promise<{}> => {
+            if (typeof collectionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "collectionId"');
             }
 
-            if (documentId === undefined) {
+            if (typeof documentId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "documentId"');
             }
 
@@ -1376,35 +2878,40 @@ class Appwrite {
          * different API modes](/docs/admin).
          *
          * @param {string} functionId
-         * @param {string} search
          * @param {number} limit
          * @param {number} offset
-         * @param {string} orderType
+         * @param {string} search
+         * @param {string} cursor
+         * @param {string} cursorDirection
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        listExecutions: async <T extends unknown>(functionId: string, search: string = '', limit: number = 25, offset: number = 0, orderType: string = 'ASC'): Promise<T> => {
-            if (functionId === undefined) {
+        listExecutions: async (functionId: string, limit?: number, offset?: number, search?: string, cursor?: string, cursorDirection?: string): Promise<Models.ExecutionList> => {
+            if (typeof functionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "functionId"');
             }
 
             let path = '/functions/{functionId}/executions'.replace('{functionId}', functionId);
             let payload: Payload = {};
 
-            if (search) {
-                payload['search'] = search;
-            }
-
-            if (limit) {
+            if (typeof limit !== 'undefined') {
                 payload['limit'] = limit;
             }
 
-            if (offset) {
+            if (typeof offset !== 'undefined') {
                 payload['offset'] = offset;
             }
 
-            if (orderType) {
-                payload['orderType'] = orderType;
+            if (typeof search !== 'undefined') {
+                payload['search'] = search;
+            }
+
+            if (typeof cursor !== 'undefined') {
+                payload['cursor'] = cursor;
+            }
+
+            if (typeof cursorDirection !== 'undefined') {
+                payload['cursorDirection'] = cursorDirection;
             }
 
             const uri = new URL(this.config.endpoint + path);
@@ -1426,8 +2933,8 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createExecution: async <T extends unknown>(functionId: string, data: string = ''): Promise<T> => {
-            if (functionId === undefined) {
+        createExecution: async (functionId: string, data?: string): Promise<Models.Execution> => {
+            if (typeof functionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "functionId"');
             }
 
@@ -1454,12 +2961,12 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getExecution: async <T extends unknown>(functionId: string, executionId: string): Promise<T> => {
-            if (functionId === undefined) {
+        getExecution: async (functionId: string, executionId: string): Promise<Models.Execution> => {
+            if (typeof functionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "functionId"');
             }
 
-            if (executionId === undefined) {
+            if (typeof executionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "executionId"');
             }
 
@@ -1488,7 +2995,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        get: async <T extends unknown>(): Promise<T> => {
+        get: async (): Promise<Models.Locale> => {
             let path = '/locale';
             let payload: Payload = {};
 
@@ -1507,7 +3014,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getContinents: async <T extends unknown>(): Promise<T> => {
+        getContinents: async (): Promise<Models.ContinentList> => {
             let path = '/locale/continents';
             let payload: Payload = {};
 
@@ -1526,7 +3033,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getCountries: async <T extends unknown>(): Promise<T> => {
+        getCountries: async (): Promise<Models.CountryList> => {
             let path = '/locale/countries';
             let payload: Payload = {};
 
@@ -1545,7 +3052,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getCountriesEU: async <T extends unknown>(): Promise<T> => {
+        getCountriesEU: async (): Promise<Models.CountryList> => {
             let path = '/locale/countries/eu';
             let payload: Payload = {};
 
@@ -1564,7 +3071,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getCountriesPhones: async <T extends unknown>(): Promise<T> => {
+        getCountriesPhones: async (): Promise<Models.PhoneList> => {
             let path = '/locale/countries/phones';
             let payload: Payload = {};
 
@@ -1584,7 +3091,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getCurrencies: async <T extends unknown>(): Promise<T> => {
+        getCurrencies: async (): Promise<Models.CurrencyList> => {
             let path = '/locale/currencies';
             let payload: Payload = {};
 
@@ -1603,7 +3110,7 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getLanguages: async <T extends unknown>(): Promise<T> => {
+        getLanguages: async (): Promise<Models.LanguageList> => {
             let path = '/locale/languages';
             let payload: Payload = {};
 
@@ -1626,27 +3133,37 @@ class Appwrite {
          * @param {string} search
          * @param {number} limit
          * @param {number} offset
+         * @param {string} cursor
+         * @param {string} cursorDirection
          * @param {string} orderType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        listFiles: async <T extends unknown>(search: string = '', limit: number = 25, offset: number = 0, orderType: string = 'ASC'): Promise<T> => {
+        listFiles: async (search?: string, limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderType?: string): Promise<Models.FileList> => {
             let path = '/storage/files';
             let payload: Payload = {};
 
-            if (search) {
+            if (typeof search !== 'undefined') {
                 payload['search'] = search;
             }
 
-            if (limit) {
+            if (typeof limit !== 'undefined') {
                 payload['limit'] = limit;
             }
 
-            if (offset) {
+            if (typeof offset !== 'undefined') {
                 payload['offset'] = offset;
             }
 
-            if (orderType) {
+            if (typeof cursor !== 'undefined') {
+                payload['cursor'] = cursor;
+            }
+
+            if (typeof cursorDirection !== 'undefined') {
+                payload['cursorDirection'] = cursorDirection;
+            }
+
+            if (typeof orderType !== 'undefined') {
                 payload['orderType'] = orderType;
             }
 
@@ -1663,19 +3180,28 @@ class Appwrite {
          * assigned to read and write access unless he has passed custom values for
          * read and write arguments.
          *
+         * @param {string} fileId
          * @param {File} file
          * @param {string[]} read
          * @param {string[]} write
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createFile: async <T extends unknown>(file: File, read: string[] = [], write: string[] = []): Promise<T> => {
-            if (file === undefined) {
+        createFile: async (fileId: string, file: File, read?: string[], write?: string[]): Promise<Models.File> => {
+            if (typeof fileId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "fileId"');
+            }
+
+            if (typeof file === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "file"');
             }
 
             let path = '/storage/files';
             let payload: Payload = {};
+
+            if (typeof fileId !== 'undefined') {
+                payload['fileId'] = fileId;
+            }
 
             if (typeof file !== 'undefined') {
                 payload['file'] = file;
@@ -1705,8 +3231,8 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getFile: async <T extends unknown>(fileId: string): Promise<T> => {
-            if (fileId === undefined) {
+        getFile: async (fileId: string): Promise<Models.File> => {
+            if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
@@ -1731,16 +3257,16 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updateFile: async <T extends unknown>(fileId: string, read: string[], write: string[]): Promise<T> => {
-            if (fileId === undefined) {
+        updateFile: async (fileId: string, read: string[], write: string[]): Promise<Models.File> => {
+            if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
-            if (read === undefined) {
+            if (typeof read === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "read"');
             }
 
-            if (write === undefined) {
+            if (typeof write === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "write"');
             }
 
@@ -1771,8 +3297,8 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        deleteFile: async <T extends unknown>(fileId: string): Promise<T> => {
-            if (fileId === undefined) {
+        deleteFile: async (fileId: string): Promise<{}> => {
+            if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
@@ -1797,7 +3323,7 @@ class Appwrite {
          * @returns {URL}
          */
         getFileDownload: (fileId: string): URL => {
-            if (fileId === undefined) {
+            if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
@@ -1807,11 +3333,10 @@ class Appwrite {
             const uri = new URL(this.config.endpoint + path);
             payload['project'] = this.config.project;
 
-            payload['jwt'] = this.config.jwt;
 
-
-            const query = new URLSearchParams(payload);
-            uri.search = query.toString();
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
             return uri;
         },
 
@@ -1826,6 +3351,7 @@ class Appwrite {
          * @param {string} fileId
          * @param {number} width
          * @param {number} height
+         * @param {string} gravity
          * @param {number} quality
          * @param {number} borderWidth
          * @param {string} borderColor
@@ -1837,62 +3363,65 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {URL}
          */
-        getFilePreview: (fileId: string, width: number = 0, height: number = 0, quality: number = 100, borderWidth: number = 0, borderColor: string = '', borderRadius: number = 0, opacity: number = 1, rotation: number = 0, background: string = '', output: string = ''): URL => {
-            if (fileId === undefined) {
+        getFilePreview: (fileId: string, width?: number, height?: number, gravity?: string, quality?: number, borderWidth?: number, borderColor?: string, borderRadius?: number, opacity?: number, rotation?: number, background?: string, output?: string): URL => {
+            if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
             let path = '/storage/files/{fileId}/preview'.replace('{fileId}', fileId);
             let payload: Payload = {};
 
-            if (width) {
+            if (typeof width !== 'undefined') {
                 payload['width'] = width;
             }
 
-            if (height) {
+            if (typeof height !== 'undefined') {
                 payload['height'] = height;
             }
 
-            if (quality) {
+            if (typeof gravity !== 'undefined') {
+                payload['gravity'] = gravity;
+            }
+
+            if (typeof quality !== 'undefined') {
                 payload['quality'] = quality;
             }
 
-            if (borderWidth) {
+            if (typeof borderWidth !== 'undefined') {
                 payload['borderWidth'] = borderWidth;
             }
 
-            if (borderColor) {
+            if (typeof borderColor !== 'undefined') {
                 payload['borderColor'] = borderColor;
             }
 
-            if (borderRadius) {
+            if (typeof borderRadius !== 'undefined') {
                 payload['borderRadius'] = borderRadius;
             }
 
-            if (opacity) {
+            if (typeof opacity !== 'undefined') {
                 payload['opacity'] = opacity;
             }
 
-            if (rotation) {
+            if (typeof rotation !== 'undefined') {
                 payload['rotation'] = rotation;
             }
 
-            if (background) {
+            if (typeof background !== 'undefined') {
                 payload['background'] = background;
             }
 
-            if (output) {
+            if (typeof output !== 'undefined') {
                 payload['output'] = output;
             }
 
             const uri = new URL(this.config.endpoint + path);
             payload['project'] = this.config.project;
 
-            payload['jwt'] = this.config.jwt;
 
-
-            const query = new URLSearchParams(payload);
-            uri.search = query.toString();
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
             return uri;
         },
 
@@ -1908,7 +3437,7 @@ class Appwrite {
          * @returns {URL}
          */
         getFileView: (fileId: string): URL => {
-            if (fileId === undefined) {
+            if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
@@ -1918,11 +3447,10 @@ class Appwrite {
             const uri = new URL(this.config.endpoint + path);
             payload['project'] = this.config.project;
 
-            payload['jwt'] = this.config.jwt;
 
-
-            const query = new URLSearchParams(payload);
-            uri.search = query.toString();
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
             return uri;
         }
     };
@@ -1940,27 +3468,37 @@ class Appwrite {
          * @param {string} search
          * @param {number} limit
          * @param {number} offset
+         * @param {string} cursor
+         * @param {string} cursorDirection
          * @param {string} orderType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        list: async <T extends unknown>(search: string = '', limit: number = 25, offset: number = 0, orderType: string = 'ASC'): Promise<T> => {
+        list: async (search?: string, limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderType?: string): Promise<Models.TeamList> => {
             let path = '/teams';
             let payload: Payload = {};
 
-            if (search) {
+            if (typeof search !== 'undefined') {
                 payload['search'] = search;
             }
 
-            if (limit) {
+            if (typeof limit !== 'undefined') {
                 payload['limit'] = limit;
             }
 
-            if (offset) {
+            if (typeof offset !== 'undefined') {
                 payload['offset'] = offset;
             }
 
-            if (orderType) {
+            if (typeof cursor !== 'undefined') {
+                payload['cursor'] = cursor;
+            }
+
+            if (typeof cursorDirection !== 'undefined') {
+                payload['cursorDirection'] = cursorDirection;
+            }
+
+            if (typeof orderType !== 'undefined') {
                 payload['orderType'] = orderType;
             }
 
@@ -1978,18 +3516,27 @@ class Appwrite {
          * who will be able add new owners and update or delete the team from your
          * project.
          *
+         * @param {string} teamId
          * @param {string} name
          * @param {string[]} roles
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        create: async <T extends unknown>(name: string, roles: string[] = ["owner"]): Promise<T> => {
-            if (name === undefined) {
+        create: async (teamId: string, name: string, roles?: string[]): Promise<Models.Team> => {
+            if (typeof teamId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "teamId"');
+            }
+
+            if (typeof name === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "name"');
             }
 
             let path = '/teams';
             let payload: Payload = {};
+
+            if (typeof teamId !== 'undefined') {
+                payload['teamId'] = teamId;
+            }
 
             if (typeof name !== 'undefined') {
                 payload['name'] = name;
@@ -2015,8 +3562,8 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        get: async <T extends unknown>(teamId: string): Promise<T> => {
-            if (teamId === undefined) {
+        get: async (teamId: string): Promise<Models.Team> => {
+            if (typeof teamId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "teamId"');
             }
 
@@ -2040,12 +3587,12 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        update: async <T extends unknown>(teamId: string, name: string): Promise<T> => {
-            if (teamId === undefined) {
+        update: async (teamId: string, name: string): Promise<Models.Team> => {
+            if (typeof teamId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "teamId"');
             }
 
-            if (name === undefined) {
+            if (typeof name === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "name"');
             }
 
@@ -2072,8 +3619,8 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        delete: async <T extends unknown>(teamId: string): Promise<T> => {
-            if (teamId === undefined) {
+        delete: async (teamId: string): Promise<{}> => {
+            if (typeof teamId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "teamId"');
             }
 
@@ -2096,31 +3643,41 @@ class Appwrite {
          * @param {string} search
          * @param {number} limit
          * @param {number} offset
+         * @param {string} cursor
+         * @param {string} cursorDirection
          * @param {string} orderType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getMemberships: async <T extends unknown>(teamId: string, search: string = '', limit: number = 25, offset: number = 0, orderType: string = 'ASC'): Promise<T> => {
-            if (teamId === undefined) {
+        getMemberships: async (teamId: string, search?: string, limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderType?: string): Promise<Models.MembershipList> => {
+            if (typeof teamId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "teamId"');
             }
 
             let path = '/teams/{teamId}/memberships'.replace('{teamId}', teamId);
             let payload: Payload = {};
 
-            if (search) {
+            if (typeof search !== 'undefined') {
                 payload['search'] = search;
             }
 
-            if (limit) {
+            if (typeof limit !== 'undefined') {
                 payload['limit'] = limit;
             }
 
-            if (offset) {
+            if (typeof offset !== 'undefined') {
                 payload['offset'] = offset;
             }
 
-            if (orderType) {
+            if (typeof cursor !== 'undefined') {
+                payload['cursor'] = cursor;
+            }
+
+            if (typeof cursorDirection !== 'undefined') {
+                payload['cursorDirection'] = cursorDirection;
+            }
+
+            if (typeof orderType !== 'undefined') {
                 payload['orderType'] = orderType;
             }
 
@@ -2133,14 +3690,17 @@ class Appwrite {
         /**
          * Create Team Membership
          *
-         * Use this endpoint to invite a new member to join your team. An email with a
-         * link to join the team will be sent to the new member email address if the
-         * member doesn't exist in the project it will be created automatically.
+         * Use this endpoint to invite a new member to join your team. If initiated
+         * from Client SDK, an email with a link to join the team will be sent to the
+         * new member's email address if the member doesn't exist in the project it
+         * will be created automatically. If initiated from server side SDKs, new
+         * member will automatically be added to the team.
          * 
          * Use the 'URL' parameter to redirect the user from the invitation email back
          * to your app. When the user is redirected, use the [Update Team Membership
          * Status](/docs/client/teams#teamsUpdateMembershipStatus) endpoint to allow
-         * the user to accept the invitation to the team.
+         * the user to accept the invitation to the team.  While calling from side
+         * SDKs the redirect url can be empty string.
          * 
          * Please note that in order to avoid a [Redirect
          * Attacks](https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.md)
@@ -2155,20 +3715,20 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createMembership: async <T extends unknown>(teamId: string, email: string, roles: string[], url: string, name: string = ''): Promise<T> => {
-            if (teamId === undefined) {
+        createMembership: async (teamId: string, email: string, roles: string[], url: string, name?: string): Promise<Models.Membership> => {
+            if (typeof teamId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "teamId"');
             }
 
-            if (email === undefined) {
+            if (typeof email === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "email"');
             }
 
-            if (roles === undefined) {
+            if (typeof roles === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "roles"');
             }
 
-            if (url === undefined) {
+            if (typeof url === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "url"');
             }
 
@@ -2179,10 +3739,6 @@ class Appwrite {
                 payload['email'] = email;
             }
 
-            if (typeof name !== 'undefined') {
-                payload['name'] = name;
-            }
-
             if (typeof roles !== 'undefined') {
                 payload['roles'] = roles;
             }
@@ -2191,8 +3747,41 @@ class Appwrite {
                 payload['url'] = url;
             }
 
+            if (typeof name !== 'undefined') {
+                payload['name'] = name;
+            }
+
             const uri = new URL(this.config.endpoint + path);
             return await this.call('post', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
+         * Get Team Membership
+         *
+         * Get a team member by the membership unique id. All team members have read
+         * access for this resource.
+         *
+         * @param {string} teamId
+         * @param {string} membershipId
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        getMembership: async (teamId: string, membershipId: string): Promise<Models.MembershipList> => {
+            if (typeof teamId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "teamId"');
+            }
+
+            if (typeof membershipId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "membershipId"');
+            }
+
+            let path = '/teams/{teamId}/memberships/{membershipId}'.replace('{teamId}', teamId).replace('{membershipId}', membershipId);
+            let payload: Payload = {};
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('get', uri, {
                 'content-type': 'application/json',
             }, payload);
         },
@@ -2207,16 +3796,16 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updateMembershipRoles: async <T extends unknown>(teamId: string, membershipId: string, roles: string[]): Promise<T> => {
-            if (teamId === undefined) {
+        updateMembershipRoles: async (teamId: string, membershipId: string, roles: string[]): Promise<Models.Membership> => {
+            if (typeof teamId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "teamId"');
             }
 
-            if (membershipId === undefined) {
+            if (typeof membershipId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "membershipId"');
             }
 
-            if (roles === undefined) {
+            if (typeof roles === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "roles"');
             }
 
@@ -2245,12 +3834,12 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        deleteMembership: async <T extends unknown>(teamId: string, membershipId: string): Promise<T> => {
-            if (teamId === undefined) {
+        deleteMembership: async (teamId: string, membershipId: string): Promise<{}> => {
+            if (typeof teamId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "teamId"');
             }
 
-            if (membershipId === undefined) {
+            if (typeof membershipId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "membershipId"');
             }
 
@@ -2277,20 +3866,20 @@ class Appwrite {
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updateMembershipStatus: async <T extends unknown>(teamId: string, membershipId: string, userId: string, secret: string): Promise<T> => {
-            if (teamId === undefined) {
+        updateMembershipStatus: async (teamId: string, membershipId: string, userId: string, secret: string): Promise<Models.Membership> => {
+            if (typeof teamId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "teamId"');
             }
 
-            if (membershipId === undefined) {
+            if (typeof membershipId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "membershipId"');
             }
 
-            if (userId === undefined) {
+            if (typeof userId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "userId"');
             }
 
-            if (secret === undefined) {
+            if (typeof secret === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "secret"');
             }
 
@@ -2315,4 +3904,4 @@ class Appwrite {
 };
 
 export { Appwrite }
-export type { AppwriteException }
+export type { AppwriteException, Models }
