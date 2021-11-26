@@ -33,10 +33,6 @@ namespace Models {
      */
     export type LogList<> = {
         /**
-         * Total number of items available on the server.
-         */
-        sum: number;
-        /**
          * List of logs.
          */
         logs: Log[];
@@ -159,6 +155,19 @@ namespace Models {
         phones: Phone[];
     }
     /**
+     * Permissions
+     */
+    export type Permissions<> = {
+        /**
+         * Read permissions.
+         */
+        read: string[];
+        /**
+         * Write permissions.
+         */
+        write: string[];
+    }
+    /**
      * Document
      */
     export type Document<> = {
@@ -171,13 +180,9 @@ namespace Models {
          */
         $collection: string;
         /**
-         * Document read permissions.
+         * Document permissions.
          */
-        $read: string[];
-        /**
-         * Document write permissions.
-         */
-        $write: string[];
+        $permissions: Permissions;
     }
     /**
      * Log
@@ -187,22 +192,6 @@ namespace Models {
          * Event name.
          */
         event: string;
-        /**
-         * User ID.
-         */
-        userId: string;
-        /**
-         * User Email.
-         */
-        userEmail: string;
-        /**
-         * User Name.
-         */
-        userName: string;
-        /**
-         * API mode when event triggered.
-         */
-        mode: string;
         /**
          * IP session in use when the session was created.
          */
@@ -285,9 +274,9 @@ namespace Models {
          */
         registration: number;
         /**
-         * User status. Pass `true` for enabled and `false` for disabled.
+         * User status. 0 for Unactivated, 1 for active and 2 is blocked.
          */
-        status: boolean;
+        status: number;
         /**
          * Unix timestamp of the most recent password update
          */
@@ -475,13 +464,9 @@ namespace Models {
          */
         $id: string;
         /**
-         * File read permissions.
+         * File permissions.
          */
-        $read: string[];
-        /**
-         * File write permissions.
-         */
-        $write: string[];
+        $permissions: Permissions;
         /**
          * File name.
          */
@@ -574,9 +559,9 @@ namespace Models {
          */
         $id: string;
         /**
-         * Execution read permissions.
+         * Execution permissions.
          */
-        $read: string[];
+        $permissions: Permissions;
         /**
          * Function ID.
          */
@@ -1172,18 +1157,13 @@ class Appwrite {
          * login to their new account, you need to create a new [account
          * session](/docs/client/account#accountCreateSession).
          *
-         * @param {string} userId
          * @param {string} email
          * @param {string} password
          * @param {string} name
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        create: async <Preferences extends Models.Preferences>(userId: string, email: string, password: string, name?: string): Promise<Models.User<Preferences>> => {
-            if (typeof userId === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "userId"');
-            }
-
+        create: async <Preferences extends Models.Preferences>(email: string, password: string, name?: string): Promise<Models.User<Preferences>> => {
             if (typeof email === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "email"');
             }
@@ -1194,10 +1174,6 @@ class Appwrite {
 
             let path = '/account';
             let payload: Payload = {};
-
-            if (typeof userId !== 'undefined') {
-                payload['userId'] = userId;
-            }
 
             if (typeof email !== 'undefined') {
                 payload['email'] = email;
@@ -1308,22 +1284,12 @@ class Appwrite {
          * Get currently logged in user list of latest security activity logs. Each
          * log returns user IP address, location and date and time of log.
          *
-         * @param {number} limit
-         * @param {number} offset
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getLogs: async (limit?: number, offset?: number): Promise<Models.LogList> => {
+        getLogs: async (): Promise<Models.LogList> => {
             let path = '/account/logs';
             let payload: Payload = {};
-
-            if (typeof limit !== 'undefined') {
-                payload['limit'] = limit;
-            }
-
-            if (typeof offset !== 'undefined') {
-                payload['offset'] = offset;
-            }
 
             const uri = new URL(this.config.endpoint + path);
             return await this.call('get', uri, {
@@ -1655,27 +1621,18 @@ class Appwrite {
          * the URL parameter empty, so that the login completion will be handled by
          * your Appwrite instance by default.
          *
-         * @param {string} userId
          * @param {string} email
          * @param {string} url
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createMagicURLSession: async (userId: string, email: string, url?: string): Promise<Models.Token> => {
-            if (typeof userId === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "userId"');
-            }
-
+        createMagicURLSession: async (email: string, url?: string): Promise<Models.Token> => {
             if (typeof email === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "email"');
             }
 
             let path = '/account/sessions/magic-url';
             let payload: Payload = {};
-
-            if (typeof userId !== 'undefined') {
-                payload['userId'] = userId;
-            }
 
             if (typeof email !== 'undefined') {
                 payload['email'] = email;
@@ -2251,17 +2208,17 @@ class Appwrite {
          * modes](/docs/admin).
          *
          * @param {string} collectionId
-         * @param {string[]} queries
+         * @param {string[]} filters
          * @param {number} limit
          * @param {number} offset
-         * @param {string} cursor
-         * @param {string} cursorDirection
-         * @param {string[]} orderAttributes
-         * @param {string[]} orderTypes
+         * @param {string} orderField
+         * @param {string} orderType
+         * @param {string} orderCast
+         * @param {string} search
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        listDocuments: async <Document extends Models.Document>(collectionId: string, queries?: string[], limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderAttributes?: string[], orderTypes?: string[]): Promise<Models.DocumentList<Document>> => {
+        listDocuments: async <Document extends Models.Document>(collectionId: string, filters?: string[], limit?: number, offset?: number, orderField?: string, orderType?: string, orderCast?: string, search?: string): Promise<Models.DocumentList<Document>> => {
             if (typeof collectionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "collectionId"');
             }
@@ -2269,8 +2226,8 @@ class Appwrite {
             let path = '/database/collections/{collectionId}/documents'.replace('{collectionId}', collectionId);
             let payload: Payload = {};
 
-            if (typeof queries !== 'undefined') {
-                payload['queries'] = queries;
+            if (typeof filters !== 'undefined') {
+                payload['filters'] = filters;
             }
 
             if (typeof limit !== 'undefined') {
@@ -2281,20 +2238,20 @@ class Appwrite {
                 payload['offset'] = offset;
             }
 
-            if (typeof cursor !== 'undefined') {
-                payload['cursor'] = cursor;
+            if (typeof orderField !== 'undefined') {
+                payload['orderField'] = orderField;
             }
 
-            if (typeof cursorDirection !== 'undefined') {
-                payload['cursorDirection'] = cursorDirection;
+            if (typeof orderType !== 'undefined') {
+                payload['orderType'] = orderType;
             }
 
-            if (typeof orderAttributes !== 'undefined') {
-                payload['orderAttributes'] = orderAttributes;
+            if (typeof orderCast !== 'undefined') {
+                payload['orderCast'] = orderCast;
             }
 
-            if (typeof orderTypes !== 'undefined') {
-                payload['orderTypes'] = orderTypes;
+            if (typeof search !== 'undefined') {
+                payload['search'] = search;
             }
 
             const uri = new URL(this.config.endpoint + path);
@@ -2312,20 +2269,18 @@ class Appwrite {
          * directly from your database console.
          *
          * @param {string} collectionId
-         * @param {string} documentId
          * @param {object} data
          * @param {string[]} read
          * @param {string[]} write
+         * @param {string} parentDocument
+         * @param {string} parentProperty
+         * @param {string} parentPropertyType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createDocument: async <Document extends Models.Document>(collectionId: string, documentId: string, data: object, read?: string[], write?: string[]): Promise<Document> => {
+        createDocument: async <Document extends Models.Document>(collectionId: string, data: object, read?: string[], write?: string[], parentDocument?: string, parentProperty?: string, parentPropertyType?: string): Promise<Document> => {
             if (typeof collectionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "collectionId"');
-            }
-
-            if (typeof documentId === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "documentId"');
             }
 
             if (typeof data === 'undefined') {
@@ -2334,10 +2289,6 @@ class Appwrite {
 
             let path = '/database/collections/{collectionId}/documents'.replace('{collectionId}', collectionId);
             let payload: Payload = {};
-
-            if (typeof documentId !== 'undefined') {
-                payload['documentId'] = documentId;
-            }
 
             if (typeof data !== 'undefined') {
                 payload['data'] = data;
@@ -2349,6 +2300,18 @@ class Appwrite {
 
             if (typeof write !== 'undefined') {
                 payload['write'] = write;
+            }
+
+            if (typeof parentDocument !== 'undefined') {
+                payload['parentDocument'] = parentDocument;
+            }
+
+            if (typeof parentProperty !== 'undefined') {
+                payload['parentProperty'] = parentProperty;
+            }
+
+            if (typeof parentPropertyType !== 'undefined') {
+                payload['parentPropertyType'] = parentPropertyType;
             }
 
             const uri = new URL(this.config.endpoint + path);
@@ -2476,21 +2439,24 @@ class Appwrite {
          * different API modes](/docs/admin).
          *
          * @param {string} functionId
+         * @param {string} search
          * @param {number} limit
          * @param {number} offset
-         * @param {string} search
-         * @param {string} cursor
-         * @param {string} cursorDirection
+         * @param {string} orderType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        listExecutions: async (functionId: string, limit?: number, offset?: number, search?: string, cursor?: string, cursorDirection?: string): Promise<Models.ExecutionList> => {
+        listExecutions: async (functionId: string, search?: string, limit?: number, offset?: number, orderType?: string): Promise<Models.ExecutionList> => {
             if (typeof functionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "functionId"');
             }
 
             let path = '/functions/{functionId}/executions'.replace('{functionId}', functionId);
             let payload: Payload = {};
+
+            if (typeof search !== 'undefined') {
+                payload['search'] = search;
+            }
 
             if (typeof limit !== 'undefined') {
                 payload['limit'] = limit;
@@ -2500,16 +2466,8 @@ class Appwrite {
                 payload['offset'] = offset;
             }
 
-            if (typeof search !== 'undefined') {
-                payload['search'] = search;
-            }
-
-            if (typeof cursor !== 'undefined') {
-                payload['cursor'] = cursor;
-            }
-
-            if (typeof cursorDirection !== 'undefined') {
-                payload['cursorDirection'] = cursorDirection;
+            if (typeof orderType !== 'undefined') {
+                payload['orderType'] = orderType;
             }
 
             const uri = new URL(this.config.endpoint + path);
@@ -2731,13 +2689,11 @@ class Appwrite {
          * @param {string} search
          * @param {number} limit
          * @param {number} offset
-         * @param {string} cursor
-         * @param {string} cursorDirection
          * @param {string} orderType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        listFiles: async (search?: string, limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderType?: string): Promise<Models.FileList> => {
+        listFiles: async (search?: string, limit?: number, offset?: number, orderType?: string): Promise<Models.FileList> => {
             let path = '/storage/files';
             let payload: Payload = {};
 
@@ -2751,14 +2707,6 @@ class Appwrite {
 
             if (typeof offset !== 'undefined') {
                 payload['offset'] = offset;
-            }
-
-            if (typeof cursor !== 'undefined') {
-                payload['cursor'] = cursor;
-            }
-
-            if (typeof cursorDirection !== 'undefined') {
-                payload['cursorDirection'] = cursorDirection;
             }
 
             if (typeof orderType !== 'undefined') {
@@ -2778,28 +2726,19 @@ class Appwrite {
          * assigned to read and write access unless he has passed custom values for
          * read and write arguments.
          *
-         * @param {string} fileId
          * @param {File} file
          * @param {string[]} read
          * @param {string[]} write
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createFile: async (fileId: string, file: File, read?: string[], write?: string[]): Promise<Models.File> => {
-            if (typeof fileId === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "fileId"');
-            }
-
+        createFile: async (file: File, read?: string[], write?: string[]): Promise<Models.File> => {
             if (typeof file === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "file"');
             }
 
             let path = '/storage/files';
             let payload: Payload = {};
-
-            if (typeof fileId !== 'undefined') {
-                payload['fileId'] = fileId;
-            }
 
             if (typeof file !== 'undefined') {
                 payload['file'] = file;
@@ -3066,13 +3005,11 @@ class Appwrite {
          * @param {string} search
          * @param {number} limit
          * @param {number} offset
-         * @param {string} cursor
-         * @param {string} cursorDirection
          * @param {string} orderType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        list: async (search?: string, limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderType?: string): Promise<Models.TeamList> => {
+        list: async (search?: string, limit?: number, offset?: number, orderType?: string): Promise<Models.TeamList> => {
             let path = '/teams';
             let payload: Payload = {};
 
@@ -3086,14 +3023,6 @@ class Appwrite {
 
             if (typeof offset !== 'undefined') {
                 payload['offset'] = offset;
-            }
-
-            if (typeof cursor !== 'undefined') {
-                payload['cursor'] = cursor;
-            }
-
-            if (typeof cursorDirection !== 'undefined') {
-                payload['cursorDirection'] = cursorDirection;
             }
 
             if (typeof orderType !== 'undefined') {
@@ -3114,27 +3043,18 @@ class Appwrite {
          * who will be able add new owners and update or delete the team from your
          * project.
          *
-         * @param {string} teamId
          * @param {string} name
          * @param {string[]} roles
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        create: async (teamId: string, name: string, roles?: string[]): Promise<Models.Team> => {
-            if (typeof teamId === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "teamId"');
-            }
-
+        create: async (name: string, roles?: string[]): Promise<Models.Team> => {
             if (typeof name === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "name"');
             }
 
             let path = '/teams';
             let payload: Payload = {};
-
-            if (typeof teamId !== 'undefined') {
-                payload['teamId'] = teamId;
-            }
 
             if (typeof name !== 'undefined') {
                 payload['name'] = name;
@@ -3241,13 +3161,11 @@ class Appwrite {
          * @param {string} search
          * @param {number} limit
          * @param {number} offset
-         * @param {string} cursor
-         * @param {string} cursorDirection
          * @param {string} orderType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getMemberships: async (teamId: string, search?: string, limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderType?: string): Promise<Models.MembershipList> => {
+        getMemberships: async (teamId: string, search?: string, limit?: number, offset?: number, orderType?: string): Promise<Models.MembershipList> => {
             if (typeof teamId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "teamId"');
             }
@@ -3265,14 +3183,6 @@ class Appwrite {
 
             if (typeof offset !== 'undefined') {
                 payload['offset'] = offset;
-            }
-
-            if (typeof cursor !== 'undefined') {
-                payload['cursor'] = cursor;
-            }
-
-            if (typeof cursorDirection !== 'undefined') {
-                payload['cursorDirection'] = cursorDirection;
             }
 
             if (typeof orderType !== 'undefined') {
@@ -3351,35 +3261,6 @@ class Appwrite {
 
             const uri = new URL(this.config.endpoint + path);
             return await this.call('post', uri, {
-                'content-type': 'application/json',
-            }, payload);
-        },
-
-        /**
-         * Get Team Membership
-         *
-         * Get a team member by the membership unique id. All team members have read
-         * access for this resource.
-         *
-         * @param {string} teamId
-         * @param {string} membershipId
-         * @throws {AppwriteException}
-         * @returns {Promise}
-         */
-        getMembership: async (teamId: string, membershipId: string): Promise<Models.MembershipList> => {
-            if (typeof teamId === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "teamId"');
-            }
-
-            if (typeof membershipId === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "membershipId"');
-            }
-
-            let path = '/teams/{teamId}/memberships/{membershipId}'.replace('{teamId}', teamId).replace('{membershipId}', membershipId);
-            let payload: Payload = {};
-
-            const uri = new URL(this.config.endpoint + path);
-            return await this.call('get', uri, {
                 'content-type': 'application/json',
             }, payload);
         },
