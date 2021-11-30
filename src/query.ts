@@ -23,9 +23,6 @@ class Query {
   static contains = (attribute: string, value: QueryTypesList): string =>
     Query.addQuery(attribute, "contains", value);
 
-  static search = (attribute: string, value: string): string =>
-    Query.addQuery(attribute, "search", value);
-
   private static addQuery = (attribute: string, oper: string, value: unknown): string =>
     value instanceof Array
       ? `${attribute}.${oper}(${value
