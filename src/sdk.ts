@@ -33,6 +33,10 @@ namespace Models {
      */
     export type LogList<> = {
         /**
+         * Total number of items available on the server.
+         */
+        sum: number;
+        /**
          * List of logs.
          */
         logs: Log[];
@@ -155,19 +159,6 @@ namespace Models {
         phones: Phone[];
     }
     /**
-     * Permissions
-     */
-    export type Permissions<> = {
-        /**
-         * Read permissions.
-         */
-        read: string[];
-        /**
-         * Write permissions.
-         */
-        write: string[];
-    }
-    /**
      * Document
      */
     export type Document<> = {
@@ -180,9 +171,13 @@ namespace Models {
          */
         $collection: string;
         /**
-         * Document permissions.
+         * Document read permissions.
          */
-        $permissions: Permissions;
+        $read: string[];
+        /**
+         * Document write permissions.
+         */
+        $write: string[];
     }
     /**
      * Log
@@ -192,6 +187,22 @@ namespace Models {
          * Event name.
          */
         event: string;
+        /**
+         * User ID.
+         */
+        userId: string;
+        /**
+         * User Email.
+         */
+        userEmail: string;
+        /**
+         * User Name.
+         */
+        userName: string;
+        /**
+         * API mode when event triggered.
+         */
+        mode: string;
         /**
          * IP session in use when the session was created.
          */
@@ -274,9 +285,9 @@ namespace Models {
          */
         registration: number;
         /**
-         * User status. 0 for Unactivated, 1 for active and 2 is blocked.
+         * User status. Pass `true` for enabled and `false` for disabled.
          */
-        status: number;
+        status: boolean;
         /**
          * Unix timestamp of the most recent password update
          */
@@ -324,9 +335,17 @@ namespace Models {
          */
         providerUid: string;
         /**
-         * Session Provider Token.
+         * Session Provider Access Token.
          */
-        providerToken: string;
+        providerAccessToken: string;
+        /**
+         * Date, the Unix timestamp of when the access token expires.
+         */
+        providerAccessTokenExpiry: number;
+        /**
+         * Session Provider Refresh Token.
+         */
+        providerRefreshToken: string;
         /**
          * IP in use when the session was created.
          */
@@ -464,9 +483,17 @@ namespace Models {
          */
         $id: string;
         /**
-         * File permissions.
+         * Bucket ID.
          */
-        $permissions: Permissions;
+        bucketId: string;
+        /**
+         * File read permissions.
+         */
+        $read: string[];
+        /**
+         * File write permissions.
+         */
+        $write: string[];
         /**
          * File name.
          */
@@ -487,6 +514,14 @@ namespace Models {
          * File original size in bytes.
          */
         sizeOriginal: number;
+        /**
+         * Total number of chunks available
+         */
+        chunksTotal: number;
+        /**
+         * Total number of chunks uploaded
+         */
+        chunksUploaded: number;
     }
     /**
      * Team
@@ -559,9 +594,9 @@ namespace Models {
          */
         $id: string;
         /**
-         * Execution permissions.
+         * Execution read permissions.
          */
-        $permissions: Permissions;
+        $read: string[];
         /**
          * Function ID.
          */
@@ -579,9 +614,9 @@ namespace Models {
          */
         status: string;
         /**
-         * The script exit code.
+         * The script status code.
          */
-        exitCode: number;
+        statusCode: number;
         /**
          * The script stdout output string. Logs the last 4,000 characters of the execution stdout output.
          */
@@ -755,29 +790,41 @@ type Realtime = {
     onMessage: (event: MessageEvent) => void;
 }
 
+export type UploadProgress = {
+    $id: string;
+    progress: number;
+    sizeUploaded: number;
+    chunksTotal: number;
+    chunksUploaded: number;
+}
+
 class AppwriteException extends Error {
     code: number;
     response: string;
-    constructor(message: string, code: number = 0, response: string = '') {
+    type: string;
+    constructor(message: string, code: number = 0, type: string = '', response: string = '') {
         super(message);
         this.name = 'AppwriteException';
         this.message = message;
         this.code = code;
+        this.type = type;
         this.response = response;
     }
 }
 
 class Appwrite {
+    static CHUNK_SIZE = 5*1024*1024; // 5MB
+
     config = {
-        endpoint: 'https://appwrite.io/v1',
+        endpoint: 'https://HOSTNAME/v1',
         endpointRealtime: '',
         project: '',
         jwt: '',
         locale: '',
     };
     headers: Headers = {
-        'x-sdk-version': 'appwrite:web:5.0.0',
-        'X-Appwrite-Response-Format': '0.11.0',
+        'x-sdk-version': 'appwrite:web:6.0.1',
+        'X-Appwrite-Response-Format': '0.12.0',
     };
 
     /**
@@ -1090,7 +1137,7 @@ class Appwrite {
             }
 
             if (400 <= response.status) {
-                throw new AppwriteException(data?.message, response.status, data);
+                throw new AppwriteException(data?.message, response.status, data?.type, data);
             }
 
             const cookieFallback = response.headers.get('X-Fallback-Cookies');
@@ -1157,13 +1204,18 @@ class Appwrite {
          * login to their new account, you need to create a new [account
          * session](/docs/client/account#accountCreateSession).
          *
+         * @param {string} userId
          * @param {string} email
          * @param {string} password
          * @param {string} name
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        create: async <Preferences extends Models.Preferences>(email: string, password: string, name?: string): Promise<Models.User<Preferences>> => {
+        create: async <Preferences extends Models.Preferences>(userId: string, email: string, password: string, name?: string): Promise<Models.User<Preferences>> => {
+            if (typeof userId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "userId"');
+            }
+
             if (typeof email === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "email"');
             }
@@ -1174,6 +1226,10 @@ class Appwrite {
 
             let path = '/account';
             let payload: Payload = {};
+
+            if (typeof userId !== 'undefined') {
+                payload['userId'] = userId;
+            }
 
             if (typeof email !== 'undefined') {
                 payload['email'] = email;
@@ -1219,11 +1275,13 @@ class Appwrite {
          * Update Account Email
          *
          * Update currently logged in user account email address. After changing user
-         * address, user confirmation status is being reset and a new confirmation
-         * mail is sent. For security measures, user password is required to complete
-         * this request.
+         * address, the user confirmation status will get reset. A new confirmation
+         * email is not sent automatically however you can use the send confirmation
+         * email endpoint again to send the confirmation email. For security measures,
+         * user password is required to complete this request.
          * This endpoint can also be used to convert an anonymous account to a normal
          * one, by passing an email address and a new password.
+         * 
          *
          * @param {string} email
          * @param {string} password
@@ -1284,12 +1342,22 @@ class Appwrite {
          * Get currently logged in user list of latest security activity logs. Each
          * log returns user IP address, location and date and time of log.
          *
+         * @param {number} limit
+         * @param {number} offset
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getLogs: async (): Promise<Models.LogList> => {
+        getLogs: async (limit?: number, offset?: number): Promise<Models.LogList> => {
             let path = '/account/logs';
             let payload: Payload = {};
+
+            if (typeof limit !== 'undefined') {
+                payload['limit'] = limit;
+            }
+
+            if (typeof offset !== 'undefined') {
+                payload['offset'] = offset;
+            }
 
             const uri = new URL(this.config.endpoint + path);
             return await this.call('get', uri, {
@@ -1379,8 +1447,9 @@ class Appwrite {
         /**
          * Update Account Preferences
          *
-         * Update currently logged in user account preferences. You can pass only the
-         * specific settings you wish to update.
+         * Update currently logged in user account preferences. The object you pass is
+         * stored as is, and replaces any previous value. The maximum allowed prefs
+         * size is 64kB and throws error if exceeded.
          *
          * @param {object} prefs
          * @throws {AppwriteException}
@@ -1621,18 +1690,27 @@ class Appwrite {
          * the URL parameter empty, so that the login completion will be handled by
          * your Appwrite instance by default.
          *
+         * @param {string} userId
          * @param {string} email
          * @param {string} url
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createMagicURLSession: async (email: string, url?: string): Promise<Models.Token> => {
+        createMagicURLSession: async (userId: string, email: string, url?: string): Promise<Models.Token> => {
+            if (typeof userId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "userId"');
+            }
+
             if (typeof email === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "email"');
             }
 
             let path = '/account/sessions/magic-url';
             let payload: Payload = {};
+
+            if (typeof userId !== 'undefined') {
+                payload['userId'] = userId;
+            }
 
             if (typeof email !== 'undefined') {
                 payload['email'] = email;
@@ -1776,11 +1854,34 @@ class Appwrite {
         },
 
         /**
+         * Update Session (Refresh Tokens)
+         *
+         *
+         * @param {string} sessionId
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        updateSession: async (sessionId: string): Promise<Models.Session> => {
+            if (typeof sessionId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "sessionId"');
+            }
+
+            let path = '/account/sessions/{sessionId}'.replace('{sessionId}', sessionId);
+            let payload: Payload = {};
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('patch', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
          * Delete Account Session
          *
          * Use this endpoint to log out the currently logged in user from all their
          * account sessions across all of their different devices. When using the
-         * option id argument, only the session unique ID provider will be deleted.
+         * Session ID argument, only the unique session ID provided is deleted.
+         * 
          *
          * @param {string} sessionId
          * @throws {AppwriteException}
@@ -2208,17 +2309,17 @@ class Appwrite {
          * modes](/docs/admin).
          *
          * @param {string} collectionId
-         * @param {string[]} filters
+         * @param {string[]} queries
          * @param {number} limit
          * @param {number} offset
-         * @param {string} orderField
-         * @param {string} orderType
-         * @param {string} orderCast
-         * @param {string} search
+         * @param {string} cursor
+         * @param {string} cursorDirection
+         * @param {string[]} orderAttributes
+         * @param {string[]} orderTypes
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        listDocuments: async <Document extends Models.Document>(collectionId: string, filters?: string[], limit?: number, offset?: number, orderField?: string, orderType?: string, orderCast?: string, search?: string): Promise<Models.DocumentList<Document>> => {
+        listDocuments: async <Document extends Models.Document>(collectionId: string, queries?: string[], limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderAttributes?: string[], orderTypes?: string[]): Promise<Models.DocumentList<Document>> => {
             if (typeof collectionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "collectionId"');
             }
@@ -2226,8 +2327,8 @@ class Appwrite {
             let path = '/database/collections/{collectionId}/documents'.replace('{collectionId}', collectionId);
             let payload: Payload = {};
 
-            if (typeof filters !== 'undefined') {
-                payload['filters'] = filters;
+            if (typeof queries !== 'undefined') {
+                payload['queries'] = queries;
             }
 
             if (typeof limit !== 'undefined') {
@@ -2238,20 +2339,20 @@ class Appwrite {
                 payload['offset'] = offset;
             }
 
-            if (typeof orderField !== 'undefined') {
-                payload['orderField'] = orderField;
+            if (typeof cursor !== 'undefined') {
+                payload['cursor'] = cursor;
             }
 
-            if (typeof orderType !== 'undefined') {
-                payload['orderType'] = orderType;
+            if (typeof cursorDirection !== 'undefined') {
+                payload['cursorDirection'] = cursorDirection;
             }
 
-            if (typeof orderCast !== 'undefined') {
-                payload['orderCast'] = orderCast;
+            if (typeof orderAttributes !== 'undefined') {
+                payload['orderAttributes'] = orderAttributes;
             }
 
-            if (typeof search !== 'undefined') {
-                payload['search'] = search;
+            if (typeof orderTypes !== 'undefined') {
+                payload['orderTypes'] = orderTypes;
             }
 
             const uri = new URL(this.config.endpoint + path);
@@ -2269,18 +2370,20 @@ class Appwrite {
          * directly from your database console.
          *
          * @param {string} collectionId
+         * @param {string} documentId
          * @param {object} data
          * @param {string[]} read
          * @param {string[]} write
-         * @param {string} parentDocument
-         * @param {string} parentProperty
-         * @param {string} parentPropertyType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createDocument: async <Document extends Models.Document>(collectionId: string, data: object, read?: string[], write?: string[], parentDocument?: string, parentProperty?: string, parentPropertyType?: string): Promise<Document> => {
+        createDocument: async <Document extends Models.Document>(collectionId: string, documentId: string, data: object, read?: string[], write?: string[]): Promise<Document> => {
             if (typeof collectionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "collectionId"');
+            }
+
+            if (typeof documentId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "documentId"');
             }
 
             if (typeof data === 'undefined') {
@@ -2289,6 +2392,10 @@ class Appwrite {
 
             let path = '/database/collections/{collectionId}/documents'.replace('{collectionId}', collectionId);
             let payload: Payload = {};
+
+            if (typeof documentId !== 'undefined') {
+                payload['documentId'] = documentId;
+            }
 
             if (typeof data !== 'undefined') {
                 payload['data'] = data;
@@ -2300,18 +2407,6 @@ class Appwrite {
 
             if (typeof write !== 'undefined') {
                 payload['write'] = write;
-            }
-
-            if (typeof parentDocument !== 'undefined') {
-                payload['parentDocument'] = parentDocument;
-            }
-
-            if (typeof parentProperty !== 'undefined') {
-                payload['parentProperty'] = parentProperty;
-            }
-
-            if (typeof parentPropertyType !== 'undefined') {
-                payload['parentPropertyType'] = parentPropertyType;
             }
 
             const uri = new URL(this.config.endpoint + path);
@@ -2431,6 +2526,38 @@ class Appwrite {
     functions = {
 
         /**
+         * Retry Build
+         *
+         *
+         * @param {string} functionId
+         * @param {string} deploymentId
+         * @param {string} buildId
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        retryBuild: async (functionId: string, deploymentId: string, buildId: string): Promise<{}> => {
+            if (typeof functionId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "functionId"');
+            }
+
+            if (typeof deploymentId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "deploymentId"');
+            }
+
+            if (typeof buildId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "buildId"');
+            }
+
+            let path = '/functions/{functionId}/deployments/{deploymentId}/builds/{buildId}'.replace('{functionId}', functionId).replace('{deploymentId}', deploymentId).replace('{buildId}', buildId);
+            let payload: Payload = {};
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('post', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
          * List Executions
          *
          * Get a list of all the current user function execution logs. You can use the
@@ -2439,24 +2566,21 @@ class Appwrite {
          * different API modes](/docs/admin).
          *
          * @param {string} functionId
-         * @param {string} search
          * @param {number} limit
          * @param {number} offset
-         * @param {string} orderType
+         * @param {string} search
+         * @param {string} cursor
+         * @param {string} cursorDirection
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        listExecutions: async (functionId: string, search?: string, limit?: number, offset?: number, orderType?: string): Promise<Models.ExecutionList> => {
+        listExecutions: async (functionId: string, limit?: number, offset?: number, search?: string, cursor?: string, cursorDirection?: string): Promise<Models.ExecutionList> => {
             if (typeof functionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "functionId"');
             }
 
             let path = '/functions/{functionId}/executions'.replace('{functionId}', functionId);
             let payload: Payload = {};
-
-            if (typeof search !== 'undefined') {
-                payload['search'] = search;
-            }
 
             if (typeof limit !== 'undefined') {
                 payload['limit'] = limit;
@@ -2466,8 +2590,16 @@ class Appwrite {
                 payload['offset'] = offset;
             }
 
-            if (typeof orderType !== 'undefined') {
-                payload['orderType'] = orderType;
+            if (typeof search !== 'undefined') {
+                payload['search'] = search;
+            }
+
+            if (typeof cursor !== 'undefined') {
+                payload['cursor'] = cursor;
+            }
+
+            if (typeof cursorDirection !== 'undefined') {
+                payload['cursorDirection'] = cursorDirection;
             }
 
             const uri = new URL(this.config.endpoint + path);
@@ -2486,10 +2618,11 @@ class Appwrite {
          *
          * @param {string} functionId
          * @param {string} data
+         * @param {boolean} async
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createExecution: async (functionId: string, data?: string): Promise<Models.Execution> => {
+        createExecution: async (functionId: string, data?: string, async?: boolean): Promise<Models.Execution> => {
             if (typeof functionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "functionId"');
             }
@@ -2499,6 +2632,10 @@ class Appwrite {
 
             if (typeof data !== 'undefined') {
                 payload['data'] = data;
+            }
+
+            if (typeof async !== 'undefined') {
+                payload['async'] = async;
             }
 
             const uri = new URL(this.config.endpoint + path);
@@ -2686,15 +2823,22 @@ class Appwrite {
          * your results. On admin mode, this endpoint will return a list of all of the
          * project's files. [Learn more about different API modes](/docs/admin).
          *
+         * @param {string} bucketId
          * @param {string} search
          * @param {number} limit
          * @param {number} offset
+         * @param {string} cursor
+         * @param {string} cursorDirection
          * @param {string} orderType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        listFiles: async (search?: string, limit?: number, offset?: number, orderType?: string): Promise<Models.FileList> => {
-            let path = '/storage/files';
+        listFiles: async (bucketId: string, search?: string, limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderType?: string): Promise<Models.FileList> => {
+            if (typeof bucketId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "bucketId"');
+            }
+
+            let path = '/storage/buckets/{bucketId}/files'.replace('{bucketId}', bucketId);
             let payload: Payload = {};
 
             if (typeof search !== 'undefined') {
@@ -2707,6 +2851,14 @@ class Appwrite {
 
             if (typeof offset !== 'undefined') {
                 payload['offset'] = offset;
+            }
+
+            if (typeof cursor !== 'undefined') {
+                payload['cursor'] = cursor;
+            }
+
+            if (typeof cursorDirection !== 'undefined') {
+                payload['cursorDirection'] = cursorDirection;
             }
 
             if (typeof orderType !== 'undefined') {
@@ -2722,23 +2874,52 @@ class Appwrite {
         /**
          * Create File
          *
-         * Create a new file. The user who creates the file will automatically be
-         * assigned to read and write access unless he has passed custom values for
-         * read and write arguments.
+         * Create a new file. Before using this route, you should create a new bucket
+         * resource using either a [server
+         * integration](/docs/server/database#storageCreateBucket) API or directly
+         * from your Appwrite console.
+         * 
+         * Larger files should be uploaded using multiple requests with the
+         * [content-range](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Range)
+         * header to send a partial request with a maximum supported chunk of `5MB`.
+         * The `content-range` header values should always be in bytes.
+         * 
+         * When the first request is sent, the server will return the **File** object,
+         * and the subsequent part request must include the file's **id** in
+         * `x-appwrite-id` header to allow the server to know that the partial upload
+         * is for the existing file and not for a new one.
+         * 
+         * If you're creating a new file using one of the Appwrite SDKs, all the
+         * chunking logic will be managed by the SDK internally.
+         * 
          *
+         * @param {string} bucketId
+         * @param {string} fileId
          * @param {File} file
          * @param {string[]} read
          * @param {string[]} write
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        createFile: async (file: File, read?: string[], write?: string[]): Promise<Models.File> => {
+        createFile: async (bucketId: string, fileId: string, file: File, read?: string[], write?: string[], onProgress = (progress: UploadProgress) => {}): Promise<Models.File> => {
+            if (typeof bucketId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "bucketId"');
+            }
+
+            if (typeof fileId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "fileId"');
+            }
+
             if (typeof file === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "file"');
             }
 
-            let path = '/storage/files';
+            let path = '/storage/buckets/{bucketId}/files'.replace('{bucketId}', bucketId);
             let payload: Payload = {};
+
+            if (typeof fileId !== 'undefined') {
+                payload['fileId'] = fileId;
+            }
 
             if (typeof file !== 'undefined') {
                 payload['file'] = file;
@@ -2753,9 +2934,69 @@ class Appwrite {
             }
 
             const uri = new URL(this.config.endpoint + path);
-            return await this.call('post', uri, {
+            const size = file.size;
+
+            if (size <= Appwrite.CHUNK_SIZE) {
+                return await this.call('post', uri, {
+            
+                    'content-type': 'multipart/form-data',
+                }, payload);
+            }
+            let id = undefined;
+            let response = undefined;
+
+            const headers: { [header: string]: string } = {
                 'content-type': 'multipart/form-data',
-            }, payload);
+            }
+
+            let counter = 0;
+            const totalCounters = Math.ceil(size / Appwrite.CHUNK_SIZE);
+            if(bucketId != 'unique()') {
+                try {
+                    response = await this.call('GET', new URL(this.config.endpoint + path + '/' + bucketId), headers);
+                    counter = response.chunksUploaded;
+                } catch(e) {
+                }
+            }
+            if(fileId != 'unique()') {
+                try {
+                    response = await this.call('GET', new URL(this.config.endpoint + path + '/' + fileId), headers);
+                    counter = response.chunksUploaded;
+                } catch(e) {
+                }
+            }
+
+            for (counter; counter < totalCounters; counter++) {
+                const start = (counter * Appwrite.CHUNK_SIZE);
+                const end = Math.min((((counter * Appwrite.CHUNK_SIZE) + Appwrite.CHUNK_SIZE) - 1), size);
+
+                headers['content-range'] = 'bytes ' + start + '-' + end + '/' + size
+
+                if (id) {
+                    headers['x-appwrite-id'] = id;
+                }
+
+                const stream = file.slice(start, end + 1);
+                payload['file'] = new File([stream], file.name);
+
+                response = await this.call('post', uri, headers, payload);
+
+                if (!id) {
+                    id = response['$id'];
+                }
+
+                if (onProgress) {
+                    onProgress({
+                        $id: response.$id,
+                        progress: Math.min((counter + 1) * Appwrite.CHUNK_SIZE, size) / size * 100,
+                        sizeUploaded: end+1,
+                        chunksTotal: response.chunksTotal,
+                        chunksUploaded: response.chunksUploaded
+                    });
+                }
+            }
+
+            return response;
         },
 
         /**
@@ -2764,16 +3005,21 @@ class Appwrite {
          * Get a file by its unique ID. This endpoint response returns a JSON object
          * with the file metadata.
          *
+         * @param {string} bucketId
          * @param {string} fileId
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getFile: async (fileId: string): Promise<Models.File> => {
+        getFile: async (bucketId: string, fileId: string): Promise<Models.File> => {
+            if (typeof bucketId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "bucketId"');
+            }
+
             if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
-            let path = '/storage/files/{fileId}'.replace('{fileId}', fileId);
+            let path = '/storage/buckets/{bucketId}/files/{fileId}'.replace('{bucketId}', bucketId).replace('{fileId}', fileId);
             let payload: Payload = {};
 
             const uri = new URL(this.config.endpoint + path);
@@ -2788,26 +3034,23 @@ class Appwrite {
          * Update a file by its unique ID. Only users with write permissions have
          * access to update this resource.
          *
+         * @param {string} bucketId
          * @param {string} fileId
          * @param {string[]} read
          * @param {string[]} write
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        updateFile: async (fileId: string, read: string[], write: string[]): Promise<Models.File> => {
+        updateFile: async (bucketId: string, fileId: string, read?: string[], write?: string[]): Promise<Models.File> => {
+            if (typeof bucketId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "bucketId"');
+            }
+
             if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
-            if (typeof read === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "read"');
-            }
-
-            if (typeof write === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "write"');
-            }
-
-            let path = '/storage/files/{fileId}'.replace('{fileId}', fileId);
+            let path = '/storage/buckets/{bucketId}/files/{fileId}'.replace('{bucketId}', bucketId).replace('{fileId}', fileId);
             let payload: Payload = {};
 
             if (typeof read !== 'undefined') {
@@ -2830,16 +3073,21 @@ class Appwrite {
          * Delete a file by its unique ID. Only users with write permissions have
          * access to delete this resource.
          *
+         * @param {string} bucketId
          * @param {string} fileId
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        deleteFile: async (fileId: string): Promise<{}> => {
+        deleteFile: async (bucketId: string, fileId: string): Promise<{}> => {
+            if (typeof bucketId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "bucketId"');
+            }
+
             if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
-            let path = '/storage/files/{fileId}'.replace('{fileId}', fileId);
+            let path = '/storage/buckets/{bucketId}/files/{fileId}'.replace('{bucketId}', bucketId).replace('{fileId}', fileId);
             let payload: Payload = {};
 
             const uri = new URL(this.config.endpoint + path);
@@ -2855,16 +3103,21 @@ class Appwrite {
          * 'Content-Disposition: attachment' header that tells the browser to start
          * downloading the file to user downloads directory.
          *
+         * @param {string} bucketId
          * @param {string} fileId
          * @throws {AppwriteException}
          * @returns {URL}
          */
-        getFileDownload: (fileId: string): URL => {
+        getFileDownload: (bucketId: string, fileId: string): URL => {
+            if (typeof bucketId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "bucketId"');
+            }
+
             if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
-            let path = '/storage/files/{fileId}/download'.replace('{fileId}', fileId);
+            let path = '/storage/buckets/{bucketId}/files/{fileId}/download'.replace('{bucketId}', bucketId).replace('{fileId}', fileId);
             let payload: Payload = {};
 
             const uri = new URL(this.config.endpoint + path);
@@ -2883,8 +3136,10 @@ class Appwrite {
          * Get a file preview image. Currently, this method supports preview for image
          * files (jpg, png, and gif), other supported formats, like pdf, docs, slides,
          * and spreadsheets, will return the file icon image. You can also pass query
-         * string arguments for cutting and resizing your preview image.
+         * string arguments for cutting and resizing your preview image. Preview is
+         * supported only for image files smaller than 10MB.
          *
+         * @param {string} bucketId
          * @param {string} fileId
          * @param {number} width
          * @param {number} height
@@ -2898,14 +3153,18 @@ class Appwrite {
          * @param {string} background
          * @param {string} output
          * @throws {AppwriteException}
-         * @returns {URL}
+         * @returns {Promise}
          */
-        getFilePreview: (fileId: string, width?: number, height?: number, gravity?: string, quality?: number, borderWidth?: number, borderColor?: string, borderRadius?: number, opacity?: number, rotation?: number, background?: string, output?: string): URL => {
+        getFilePreview: async (bucketId: string, fileId: string, width?: number, height?: number, gravity?: string, quality?: number, borderWidth?: number, borderColor?: string, borderRadius?: number, opacity?: number, rotation?: number, background?: string, output?: string): Promise<{}> => {
+            if (typeof bucketId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "bucketId"');
+            }
+
             if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
-            let path = '/storage/files/{fileId}/preview'.replace('{fileId}', fileId);
+            let path = '/storage/buckets/{bucketId}/files/{fileId}/preview'.replace('{bucketId}', bucketId).replace('{fileId}', fileId);
             let payload: Payload = {};
 
             if (typeof width !== 'undefined') {
@@ -2953,13 +3212,9 @@ class Appwrite {
             }
 
             const uri = new URL(this.config.endpoint + path);
-            payload['project'] = this.config.project;
-
-
-            for (const [key, value] of Object.entries(this.flatten(payload))) {
-                uri.searchParams.append(key, value);
-            }
-            return uri;
+            return await this.call('get', uri, {
+                'content-type': 'application/json',
+            }, payload);
         },
 
         /**
@@ -2969,16 +3224,21 @@ class Appwrite {
          * download method but returns with no  'Content-Disposition: attachment'
          * header.
          *
+         * @param {string} bucketId
          * @param {string} fileId
          * @throws {AppwriteException}
          * @returns {URL}
          */
-        getFileView: (fileId: string): URL => {
+        getFileView: (bucketId: string, fileId: string): URL => {
+            if (typeof bucketId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "bucketId"');
+            }
+
             if (typeof fileId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "fileId"');
             }
 
-            let path = '/storage/files/{fileId}/view'.replace('{fileId}', fileId);
+            let path = '/storage/buckets/{bucketId}/files/{fileId}/view'.replace('{bucketId}', bucketId).replace('{fileId}', fileId);
             let payload: Payload = {};
 
             const uri = new URL(this.config.endpoint + path);
@@ -2997,19 +3257,22 @@ class Appwrite {
         /**
          * List Teams
          *
-         * Get a list of all the current user teams. You can use the query params to
-         * filter your results. On admin mode, this endpoint will return a list of all
-         * of the project's teams. [Learn more about different API
-         * modes](/docs/admin).
+         * Get a list of all the teams in which the current user is a member. You can
+         * use the parameters to filter your results.
+         * 
+         * In admin mode, this endpoint returns a list of all the teams in the current
+         * project. [Learn more about different API modes](/docs/admin).
          *
          * @param {string} search
          * @param {number} limit
          * @param {number} offset
+         * @param {string} cursor
+         * @param {string} cursorDirection
          * @param {string} orderType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        list: async (search?: string, limit?: number, offset?: number, orderType?: string): Promise<Models.TeamList> => {
+        list: async (search?: string, limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderType?: string): Promise<Models.TeamList> => {
             let path = '/teams';
             let payload: Payload = {};
 
@@ -3023,6 +3286,14 @@ class Appwrite {
 
             if (typeof offset !== 'undefined') {
                 payload['offset'] = offset;
+            }
+
+            if (typeof cursor !== 'undefined') {
+                payload['cursor'] = cursor;
+            }
+
+            if (typeof cursorDirection !== 'undefined') {
+                payload['cursorDirection'] = cursorDirection;
             }
 
             if (typeof orderType !== 'undefined') {
@@ -3039,22 +3310,30 @@ class Appwrite {
          * Create Team
          *
          * Create a new team. The user who creates the team will automatically be
-         * assigned as the owner of the team. The team owner can invite new members,
-         * who will be able add new owners and update or delete the team from your
-         * project.
+         * assigned as the owner of the team. Only the users with the owner role can
+         * invite new members, add new owners and delete or update the team.
          *
+         * @param {string} teamId
          * @param {string} name
          * @param {string[]} roles
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        create: async (name: string, roles?: string[]): Promise<Models.Team> => {
+        create: async (teamId: string, name: string, roles?: string[]): Promise<Models.Team> => {
+            if (typeof teamId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "teamId"');
+            }
+
             if (typeof name === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "name"');
             }
 
             let path = '/teams';
             let payload: Payload = {};
+
+            if (typeof teamId !== 'undefined') {
+                payload['teamId'] = teamId;
+            }
 
             if (typeof name !== 'undefined') {
                 payload['name'] = name;
@@ -3073,8 +3352,7 @@ class Appwrite {
         /**
          * Get Team
          *
-         * Get a team by its unique ID. All team members have read access for this
-         * resource.
+         * Get a team by its ID. All team members have read access for this resource.
          *
          * @param {string} teamId
          * @throws {AppwriteException}
@@ -3097,8 +3375,8 @@ class Appwrite {
         /**
          * Update Team
          *
-         * Update a team by its unique ID. Only team owners have write access for this
-         * resource.
+         * Update a team using its ID. Only members with the owner role can update the
+         * team.
          *
          * @param {string} teamId
          * @param {string} name
@@ -3130,8 +3408,8 @@ class Appwrite {
         /**
          * Delete Team
          *
-         * Delete a team by its unique ID. Only team owners have write access for this
-         * resource.
+         * Delete a team using its ID. Only team members with the owner role can
+         * delete the team.
          *
          * @param {string} teamId
          * @throws {AppwriteException}
@@ -3154,18 +3432,20 @@ class Appwrite {
         /**
          * Get Team Memberships
          *
-         * Get a team members by the team unique ID. All team members have read access
-         * for this list of resources.
+         * Use this endpoint to list a team's members using the team's ID. All team
+         * members have read access to this endpoint.
          *
          * @param {string} teamId
          * @param {string} search
          * @param {number} limit
          * @param {number} offset
+         * @param {string} cursor
+         * @param {string} cursorDirection
          * @param {string} orderType
          * @throws {AppwriteException}
          * @returns {Promise}
          */
-        getMemberships: async (teamId: string, search?: string, limit?: number, offset?: number, orderType?: string): Promise<Models.MembershipList> => {
+        getMemberships: async (teamId: string, search?: string, limit?: number, offset?: number, cursor?: string, cursorDirection?: string, orderType?: string): Promise<Models.MembershipList> => {
             if (typeof teamId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "teamId"');
             }
@@ -3185,6 +3465,14 @@ class Appwrite {
                 payload['offset'] = offset;
             }
 
+            if (typeof cursor !== 'undefined') {
+                payload['cursor'] = cursor;
+            }
+
+            if (typeof cursorDirection !== 'undefined') {
+                payload['cursorDirection'] = cursorDirection;
+            }
+
             if (typeof orderType !== 'undefined') {
                 payload['orderType'] = orderType;
             }
@@ -3198,22 +3486,21 @@ class Appwrite {
         /**
          * Create Team Membership
          *
-         * Use this endpoint to invite a new member to join your team. If initiated
-         * from Client SDK, an email with a link to join the team will be sent to the
-         * new member's email address if the member doesn't exist in the project it
-         * will be created automatically. If initiated from server side SDKs, new
-         * member will automatically be added to the team.
+         * Invite a new member to join your team. If initiated from the client SDK, an
+         * email with a link to join the team will be sent to the member's email
+         * address and an account will be created for them should they not be signed
+         * up already. If initiated from server-side SDKs, the new member will
+         * automatically be added to the team.
          * 
-         * Use the 'URL' parameter to redirect the user from the invitation email back
+         * Use the 'url' parameter to redirect the user from the invitation email back
          * to your app. When the user is redirected, use the [Update Team Membership
          * Status](/docs/client/teams#teamsUpdateMembershipStatus) endpoint to allow
-         * the user to accept the invitation to the team.  While calling from side
-         * SDKs the redirect url can be empty string.
+         * the user to accept the invitation to the team. 
          * 
-         * Please note that in order to avoid a [Redirect
-         * Attacks](https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.md)
+         * Please note that to avoid a [Redirect
+         * Attack](https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.md)
          * the only valid redirect URL's are the once from domains you have set when
-         * added your platforms in the console interface.
+         * adding your platforms in the console interface.
          *
          * @param {string} teamId
          * @param {string} email
@@ -3266,8 +3553,40 @@ class Appwrite {
         },
 
         /**
+         * Get Team Membership
+         *
+         * Get a team member by the membership unique id. All team members have read
+         * access for this resource.
+         *
+         * @param {string} teamId
+         * @param {string} membershipId
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        getMembership: async (teamId: string, membershipId: string): Promise<Models.MembershipList> => {
+            if (typeof teamId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "teamId"');
+            }
+
+            if (typeof membershipId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "membershipId"');
+            }
+
+            let path = '/teams/{teamId}/memberships/{membershipId}'.replace('{teamId}', teamId).replace('{membershipId}', membershipId);
+            let payload: Payload = {};
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('get', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
          * Update Membership Roles
          *
+         * Modify the roles of a team member. Only team members with the owner role
+         * have access to this endpoint. Learn more about [roles and
+         * permissions](/docs/permissions).
          *
          * @param {string} teamId
          * @param {string} membershipId
@@ -3335,8 +3654,12 @@ class Appwrite {
          * Update Team Membership Status
          *
          * Use this endpoint to allow a user to accept an invitation to join a team
-         * after being redirected back to your app from the invitation email recieved
+         * after being redirected back to your app from the invitation email received
          * by the user.
+         * 
+         * If the request is successful, a session for the user is automatically
+         * created.
+         * 
          *
          * @param {string} teamId
          * @param {string} membershipId
@@ -3382,5 +3705,44 @@ class Appwrite {
 
 };
 
-export { Appwrite }
-export type { AppwriteException, Models }
+type QueryTypesSingle = string | number | boolean;
+type QueryTypesList = string[] | number[] | boolean[];
+type QueryTypes = QueryTypesSingle | QueryTypesList;
+
+class Query {
+  static equal = (attribute: string, value: QueryTypes): string =>
+    Query.addQuery(attribute, "equal", value);
+
+  static notEqual = (attribute: string, value: QueryTypes): string =>
+    Query.addQuery(attribute, "notEqual", value);
+
+  static lesser = (attribute: string, value: QueryTypes): string =>
+    Query.addQuery(attribute, "lesser", value);
+
+  static lesserEqual = (attribute: string, value: QueryTypes): string =>
+    Query.addQuery(attribute, "lesserEqual", value);
+
+  static greater = (attribute: string, value: QueryTypes): string =>
+    Query.addQuery(attribute, "greater", value);
+
+  static greaterEqual = (attribute: string, value: QueryTypes): string =>
+    Query.addQuery(attribute, "greaterEqual", value);
+
+  static search = (attribute: string, value: string): string =>
+    Query.addQuery(attribute, "search", value);
+
+  private static addQuery = (attribute: string, oper: string, value: QueryTypes): string =>
+    value instanceof Array
+      ? `${attribute}.${oper}(${value
+          .map((v: QueryTypesSingle) => Query.parseValues(v))
+          .join(",")})`
+      : `${attribute}.${oper}(${Query.parseValues(value)})`;
+
+  private static parseValues = (value: QueryTypes): string =>
+    typeof value === "string" || value instanceof String
+      ? `"${value}"`
+      : `${value}`;
+}
+
+export { Appwrite, Query }
+export type { AppwriteException, Models, QueryTypes, QueryTypesList }

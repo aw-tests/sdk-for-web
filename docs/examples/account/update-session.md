@@ -5,7 +5,7 @@ sdk
     .setProject('5df5acd0d48c2') // Your project ID
 ;
 
-let promise = sdk.account.create('[USER_ID]', 'email@example.com', 'password');
+let promise = sdk.account.updateSession('[SESSION_ID]');
 
 promise.then(function (response) {
     console.log(response); // Success
