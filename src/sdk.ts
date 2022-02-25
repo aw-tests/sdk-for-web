@@ -2951,13 +2951,6 @@ class Appwrite {
 
             let counter = 0;
             const totalCounters = Math.ceil(size / Appwrite.CHUNK_SIZE);
-            if(bucketId != 'unique()') {
-                try {
-                    response = await this.call('GET', new URL(this.config.endpoint + path + '/' + bucketId), headers);
-                    counter = response.chunksUploaded;
-                } catch(e) {
-                }
-            }
             if(fileId != 'unique()') {
                 try {
                     response = await this.call('GET', new URL(this.config.endpoint + path + '/' + fileId), headers);
