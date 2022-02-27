@@ -3146,9 +3146,9 @@ class Appwrite {
          * @param {string} background
          * @param {string} output
          * @throws {AppwriteException}
-         * @returns {Promise}
+         * @returns {URL}
          */
-        getFilePreview: async (bucketId: string, fileId: string, width?: number, height?: number, gravity?: string, quality?: number, borderWidth?: number, borderColor?: string, borderRadius?: number, opacity?: number, rotation?: number, background?: string, output?: string): Promise<{}> => {
+        getFilePreview: (bucketId: string, fileId: string, width?: number, height?: number, gravity?: string, quality?: number, borderWidth?: number, borderColor?: string, borderRadius?: number, opacity?: number, rotation?: number, background?: string, output?: string): URL => {
             if (typeof bucketId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "bucketId"');
             }
@@ -3205,9 +3205,13 @@ class Appwrite {
             }
 
             const uri = new URL(this.config.endpoint + path);
-            return await this.call('get', uri, {
-                'content-type': 'application/json',
-            }, payload);
+            payload['project'] = this.config.project;
+
+
+            for (const [key, value] of Object.entries(this.flatten(payload))) {
+                uri.searchParams.append(key, value);
+            }
+            return uri;
         },
 
         /**
