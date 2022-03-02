@@ -7,9 +7,9 @@ namespace Models {
      */
     export type DocumentList<Document extends Models.Document> = {
         /**
-         * Total number of items available on the server.
+         * Total number of documents documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of documents.
          */
@@ -20,9 +20,9 @@ namespace Models {
      */
     export type SessionList<> = {
         /**
-         * Total number of items available on the server.
+         * Total number of sessions documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of sessions.
          */
@@ -33,9 +33,9 @@ namespace Models {
      */
     export type LogList<> = {
         /**
-         * Total number of items available on the server.
+         * Total number of logs documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of logs.
          */
@@ -46,9 +46,9 @@ namespace Models {
      */
     export type FileList<> = {
         /**
-         * Total number of items available on the server.
+         * Total number of files documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of files.
          */
@@ -59,9 +59,9 @@ namespace Models {
      */
     export type TeamList<> = {
         /**
-         * Total number of items available on the server.
+         * Total number of teams documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of teams.
          */
@@ -72,9 +72,9 @@ namespace Models {
      */
     export type MembershipList<> = {
         /**
-         * Total number of items available on the server.
+         * Total number of memberships documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of memberships.
          */
@@ -85,9 +85,9 @@ namespace Models {
      */
     export type ExecutionList<> = {
         /**
-         * Total number of items available on the server.
+         * Total number of executions documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of executions.
          */
@@ -98,9 +98,9 @@ namespace Models {
      */
     export type CountryList<> = {
         /**
-         * Total number of items available on the server.
+         * Total number of countries documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of countries.
          */
@@ -111,9 +111,9 @@ namespace Models {
      */
     export type ContinentList<> = {
         /**
-         * Total number of items available on the server.
+         * Total number of continents documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of continents.
          */
@@ -124,9 +124,9 @@ namespace Models {
      */
     export type LanguageList<> = {
         /**
-         * Total number of items available on the server.
+         * Total number of languages documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of languages.
          */
@@ -137,9 +137,9 @@ namespace Models {
      */
     export type CurrencyList<> = {
         /**
-         * Total number of items available on the server.
+         * Total number of currencies documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of currencies.
          */
@@ -150,9 +150,9 @@ namespace Models {
      */
     export type PhoneList<> = {
         /**
-         * Total number of items available on the server.
+         * Total number of phones documents that matched your query.
          */
-        sum: number;
+        total: number;
         /**
          * List of phones.
          */
@@ -540,9 +540,9 @@ namespace Models {
          */
         dateCreated: number;
         /**
-         * Total sum of team members.
+         * Total number of team members.
          */
-        sum: number;
+        total: number;
     }
     /**
      * Membership
@@ -824,7 +824,7 @@ class Appwrite {
     };
     headers: Headers = {
         'x-sdk-version': 'appwrite:web:6.0.1',
-        'X-Appwrite-Response-Format': '0.12.0',
+        'X-Appwrite-Response-Format': '0.13.0',
     };
 
     /**
@@ -1081,10 +1081,10 @@ class Appwrite {
 
     private async call(method: string, url: URL, headers: Headers = {}, params: Payload = {}): Promise<any> {
         method = method.toUpperCase();
-        headers = {
-            ...headers,
-            ...this.headers
-        }
+
+
+        headers = Object.assign({}, this.headers, headers);
+        
         let options: RequestInit = {
             method,
             headers,
