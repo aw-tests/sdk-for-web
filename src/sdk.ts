@@ -827,7 +827,7 @@ class Appwrite {
         locale: '',
     };
     headers: Headers = {
-        'x-sdk-version': 'appwrite:web:7.0.0',
+        'x-sdk-version': 'appwrite:web:8.0.0',
         'X-Appwrite-Response-Format': '0.13.0',
     };
 
@@ -1249,28 +1249,6 @@ class Appwrite {
 
             const uri = new URL(this.config.endpoint + path);
             return await this.call('post', uri, {
-                'content-type': 'application/json',
-            }, payload);
-        },
-
-        /**
-         * Delete Account
-         *
-         * Delete a currently logged in user account. Behind the scene, the user
-         * record is not deleted but permanently blocked from any access. This is done
-         * to avoid deleted accounts being overtaken by new users with the same email
-         * address. Any user-related resources like documents or storage files should
-         * be deleted separately.
-         *
-         * @throws {AppwriteException}
-         * @returns {Promise}
-         */
-        delete: async (): Promise<{}> => {
-            let path = '/account';
-            let payload: Payload = {};
-
-            const uri = new URL(this.config.endpoint + path);
-            return await this.call('delete', uri, {
                 'content-type': 'application/json',
             }, payload);
         },
@@ -1904,6 +1882,26 @@ class Appwrite {
 
             const uri = new URL(this.config.endpoint + path);
             return await this.call('delete', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
+         * Update Account Status
+         *
+         * Block the currently logged in user account. Behind the scene, the user
+         * record is not deleted but permanently blocked from any access. To
+         * completely delete a user, use the Users API instead.
+         *
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        updateStatus: async <Preferences extends Models.Preferences>(): Promise<Models.User<Preferences>> => {
+            let path = '/account/status';
+            let payload: Payload = {};
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('patch', uri, {
                 'content-type': 'application/json',
             }, payload);
         },
