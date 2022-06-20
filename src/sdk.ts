@@ -171,6 +171,14 @@ namespace Models {
          */
         $collection: string;
         /**
+         * Document creation date in Unix timestamp.
+         */
+        $createdAt: number;
+        /**
+         * Document update date in Unix timestamp.
+         */
+        $updatedAt: number;
+        /**
          * Document read permissions.
          */
         $read: string[];
@@ -277,6 +285,14 @@ namespace Models {
          */
         $id: string;
         /**
+         * User creation date in Unix timestamp.
+         */
+        $createdAt: number;
+        /**
+         * User update date in Unix timestamp.
+         */
+        $updatedAt: number;
+        /**
          * User name.
          */
         name: string;
@@ -297,9 +313,17 @@ namespace Models {
          */
         email: string;
         /**
+         * User phone number in E.164 format.
+         */
+        phone: string;
+        /**
          * Email verification status.
          */
         emailVerification: boolean;
+        /**
+         * Phone verification status.
+         */
+        phoneVerification: boolean;
         /**
          * User preferences as a key-value object
          */
@@ -318,6 +342,10 @@ namespace Models {
          * Session ID.
          */
         $id: string;
+        /**
+         * Session creation date in Unix timestamp.
+         */
+        $createdAt: number;
         /**
          * User ID.
          */
@@ -420,6 +448,10 @@ namespace Models {
          */
         $id: string;
         /**
+         * Token creation date in Unix timestamp.
+         */
+        $createdAt: number;
+        /**
          * User ID.
          */
         userId: string;
@@ -487,6 +519,14 @@ namespace Models {
          */
         bucketId: string;
         /**
+         * File creation date in Unix timestamp.
+         */
+        $createdAt: number;
+        /**
+         * File update date in Unix timestamp.
+         */
+        $updatedAt: number;
+        /**
          * File read permissions.
          */
         $read: string[];
@@ -498,10 +538,6 @@ namespace Models {
          * File name.
          */
         name: string;
-        /**
-         * File creation date in Unix timestamp.
-         */
-        dateCreated: number;
         /**
          * File MD5 signature.
          */
@@ -532,13 +568,17 @@ namespace Models {
          */
         $id: string;
         /**
+         * Team creation date in Unix timestamp.
+         */
+        $createdAt: number;
+        /**
+         * Team update date in Unix timestamp.
+         */
+        $updatedAt: number;
+        /**
          * Team name.
          */
         name: string;
-        /**
-         * Team creation date in Unix timestamp.
-         */
-        dateCreated: number;
         /**
          * Total number of team members.
          */
@@ -552,6 +592,14 @@ namespace Models {
          * Membership ID.
          */
         $id: string;
+        /**
+         * Membership creation date in Unix timestamp.
+         */
+        $createdAt: number;
+        /**
+         * Membership update date in Unix timestamp.
+         */
+        $updatedAt: number;
         /**
          * User ID.
          */
@@ -598,6 +646,14 @@ namespace Models {
          */
         $id: string;
         /**
+         * Execution creation date in Unix timestamp.
+         */
+        $createdAt: number;
+        /**
+         * Execution update date in Unix timestamp.
+         */
+        $updatedAt: number;
+        /**
          * Execution read permissions.
          */
         $read: string[];
@@ -605,10 +661,6 @@ namespace Models {
          * Function ID.
          */
         functionId: string;
-        /**
-         * The execution creation date in Unix timestamp.
-         */
-        dateCreated: number;
         /**
          * The trigger that caused the function to execute. Possible values can be: `http`, `schedule`, or `event`.
          */
@@ -748,7 +800,7 @@ type RealtimeRequest = {
 }
 
 export type RealtimeResponseEvent<T extends unknown> = {
-    event: string;
+    events: string[];
     channels: string[];
     timestamp: number;
     payload: T;
@@ -827,8 +879,8 @@ class Appwrite {
         locale: '',
     };
     headers: Headers = {
-        'x-sdk-version': 'appwrite:web:8.0.0',
-        'X-Appwrite-Response-Format': '0.13.0',
+        'x-sdk-version': 'appwrite:web:8.0.1',
+        'X-Appwrite-Response-Format': '0.15.0',
     };
 
     /**
@@ -1409,6 +1461,45 @@ class Appwrite {
         },
 
         /**
+         * Update Account Phone
+         *
+         * Update currently logged in user account phone number. After changing phone
+         * number, the user confirmation status will get reset. A new confirmation SMS
+         * is not sent automatically however you can use the phone confirmation
+         * endpoint again to send the confirmation SMS.
+         *
+         * @param {string} number
+         * @param {string} password
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        updatePhone: async <Preferences extends Models.Preferences>(number: string, password: string): Promise<Models.User<Preferences>> => {
+            if (typeof number === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "number"');
+            }
+
+            if (typeof password === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "password"');
+            }
+
+            let path = '/account/phone';
+            let payload: Payload = {};
+
+            if (typeof number !== 'undefined') {
+                payload['number'] = number;
+            }
+
+            if (typeof password !== 'undefined') {
+                payload['password'] = password;
+            }
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('patch', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
          * Get Account Preferences
          *
          * Get currently logged in user preferences as a key-value object.
@@ -1580,43 +1671,6 @@ class Appwrite {
         },
 
         /**
-         * Create Account Session
-         *
-         * Allow the user to login into their account by providing a valid email and
-         * password combination. This route will create a new session for the user.
-         *
-         * @param {string} email
-         * @param {string} password
-         * @throws {AppwriteException}
-         * @returns {Promise}
-         */
-        createSession: async (email: string, password: string): Promise<Models.Session> => {
-            if (typeof email === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "email"');
-            }
-
-            if (typeof password === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "password"');
-            }
-
-            let path = '/account/sessions';
-            let payload: Payload = {};
-
-            if (typeof email !== 'undefined') {
-                payload['email'] = email;
-            }
-
-            if (typeof password !== 'undefined') {
-                payload['password'] = password;
-            }
-
-            const uri = new URL(this.config.endpoint + path);
-            return await this.call('post', uri, {
-                'content-type': 'application/json',
-            }, payload);
-        },
-
-        /**
          * Delete All Account Sessions
          *
          * Delete all sessions from the user account and remove any sessions cookies
@@ -1651,6 +1705,43 @@ class Appwrite {
         createAnonymousSession: async (): Promise<Models.Session> => {
             let path = '/account/sessions/anonymous';
             let payload: Payload = {};
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('post', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
+         * Create Account Session with Email
+         *
+         * Allow the user to login into their account by providing a valid email and
+         * password combination. This route will create a new session for the user.
+         *
+         * @param {string} email
+         * @param {string} password
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        createEmailSession: async (email: string, password: string): Promise<Models.Session> => {
+            if (typeof email === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "email"');
+            }
+
+            if (typeof password === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "password"');
+            }
+
+            let path = '/account/sessions/email';
+            let payload: Payload = {};
+
+            if (typeof email !== 'undefined') {
+                payload['email'] = email;
+            }
+
+            if (typeof password !== 'undefined') {
+                payload['password'] = password;
+            }
 
             const uri = new URL(this.config.endpoint + path);
             return await this.call('post', uri, {
@@ -1812,6 +1903,92 @@ class Appwrite {
         },
 
         /**
+         * Create Phone session
+         *
+         * Sends the user a SMS with a secret key for creating a session. Use the
+         * returned user ID and the secret to submit a request to the [PUT
+         * /account/sessions/phone](/docs/client/account#accountUpdatePhoneSession)
+         * endpoint to complete the login process. The secret sent to the user's phone
+         * is valid for 15 minutes.
+         *
+         * @param {string} userId
+         * @param {string} number
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        createPhoneSession: async (userId: string, number: string): Promise<Models.Token> => {
+            if (typeof userId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "userId"');
+            }
+
+            if (typeof number === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "number"');
+            }
+
+            let path = '/account/sessions/phone';
+            let payload: Payload = {};
+
+            if (typeof userId !== 'undefined') {
+                payload['userId'] = userId;
+            }
+
+            if (typeof number !== 'undefined') {
+                payload['number'] = number;
+            }
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('post', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
+         * Create Phone session (confirmation)
+         *
+         * Use this endpoint to complete creating the session with the Magic URL. Both
+         * the **userId** and **secret** arguments will be passed as query parameters
+         * to the redirect URL you have provided when sending your request to the
+         * [POST
+         * /account/sessions/magic-url](/docs/client/account#accountCreateMagicURLSession)
+         * endpoint.
+         * 
+         * Please note that in order to avoid a [Redirect
+         * Attack](https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.md)
+         * the only valid redirect URLs are the ones from domains you have set when
+         * adding your platforms in the console interface.
+         *
+         * @param {string} userId
+         * @param {string} secret
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        updatePhoneSession: async (userId: string, secret: string): Promise<Models.Session> => {
+            if (typeof userId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "userId"');
+            }
+
+            if (typeof secret === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "secret"');
+            }
+
+            let path = '/account/sessions/phone';
+            let payload: Payload = {};
+
+            if (typeof userId !== 'undefined') {
+                payload['userId'] = userId;
+            }
+
+            if (typeof secret !== 'undefined') {
+                payload['secret'] = secret;
+            }
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('put', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
          * Get Session By ID
          *
          * Use this endpoint to get a logged in user's session using a Session ID.
@@ -1916,8 +2093,8 @@ class Appwrite {
          * should redirect the user back to your app and allow you to complete the
          * verification process by verifying both the **userId** and **secret**
          * parameters. Learn more about how to [complete the verification
-         * process](/docs/client/account#accountUpdateVerification). The verification
-         * link sent to the user's email address is valid for 7 days.
+         * process](/docs/client/account#accountUpdateEmailVerification). The
+         * verification link sent to the user's email address is valid for 7 days.
          * 
          * Please note that in order to avoid a [Redirect
          * Attack](https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.md),
@@ -1970,6 +2147,69 @@ class Appwrite {
             }
 
             let path = '/account/verification';
+            let payload: Payload = {};
+
+            if (typeof userId !== 'undefined') {
+                payload['userId'] = userId;
+            }
+
+            if (typeof secret !== 'undefined') {
+                payload['secret'] = secret;
+            }
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('put', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
+         * Create Phone Verification
+         *
+         * Use this endpoint to send a verification message to your user's phone
+         * number to confirm they are the valid owners of that address. The provided
+         * secret should allow you to complete the verification process by verifying
+         * both the **userId** and **secret** parameters. Learn more about how to
+         * [complete the verification
+         * process](/docs/client/account#accountUpdatePhoneVerification). The
+         * verification link sent to the user's phone number is valid for 15 minutes.
+         *
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        createPhoneVerification: async (): Promise<Models.Token> => {
+            let path = '/account/verification/phone';
+            let payload: Payload = {};
+
+            const uri = new URL(this.config.endpoint + path);
+            return await this.call('post', uri, {
+                'content-type': 'application/json',
+            }, payload);
+        },
+
+        /**
+         * Create Phone Verification (confirmation)
+         *
+         * Use this endpoint to complete the user phone verification process. Use the
+         * **userId** and **secret** that were sent to your user's phone number to
+         * verify the user email ownership. If confirmed this route will return a 200
+         * status code.
+         *
+         * @param {string} userId
+         * @param {string} secret
+         * @throws {AppwriteException}
+         * @returns {Promise}
+         */
+        updatePhoneVerification: async (userId: string, secret: string): Promise<Models.Token> => {
+            if (typeof userId === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "userId"');
+            }
+
+            if (typeof secret === 'undefined') {
+                throw new AppwriteException('Missing required parameter: "secret"');
+            }
+
+            let path = '/account/verification/phone';
             let payload: Payload = {};
 
             if (typeof userId !== 'undefined') {
@@ -2967,6 +3207,11 @@ class Appwrite {
             }
 
             const uri = new URL(this.config.endpoint + path);
+
+            if(!(file instanceof File)) {
+                throw new AppwriteException('Parameter "file" has to be a File.');
+            }
+
             const size = file.size;
 
             if (size <= Appwrite.CHUNK_SIZE) {
