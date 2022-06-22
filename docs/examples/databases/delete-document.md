@@ -5,7 +5,7 @@ sdk
     .setProject('5df5acd0d48c2') // Your project ID
 ;
 
-let promise = sdk.database.getDocument('[COLLECTION_ID]', '[DOCUMENT_ID]');
+let promise = sdk.databases.deleteDocument('[DATABASE_ID]', '[COLLECTION_ID]', '[DOCUMENT_ID]');
 
 promise.then(function (response) {
     console.log(response); // Success

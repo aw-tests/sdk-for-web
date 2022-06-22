@@ -3,7 +3,7 @@ import typescript from "@rollup/plugin-typescript";
 
 export default {
     external: Object.keys(pkg.dependencies),
-    input: "src/index.ts",
+    input: "src/sdk.ts",
     plugins: [typescript()],
     output: [
         {
@@ -20,7 +20,7 @@ export default {
         {
             format: "iife",
             file: pkg.jsdelivr,
-            name: "Appwrite",
+            name: "window",
             extend: true,
             globals: {
                 "cross-fetch": "window",
