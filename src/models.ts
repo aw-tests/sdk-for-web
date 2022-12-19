@@ -166,7 +166,11 @@ export namespace Models {
         /**
          * Collection ID.
          */
-        $collection: string;
+        $collectionId: string;
+        /**
+         * Database ID.
+         */
+        $databaseId: string;
         /**
          * Document creation date in ISO 8601 format.
          */

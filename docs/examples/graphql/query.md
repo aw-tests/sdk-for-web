@@ -1,15 +1,15 @@
-import { Client, Teams } from "appwrite";
+import { Client, Graphql } from "appwrite";
 
 const client = new Client();
 
-const teams = new Teams(client);
+const graphql = new Graphql(client);
 
 client
     .setEndpoint('https://[HOSTNAME_OR_IP]/v1') // Your API Endpoint
     .setProject('5df5acd0d48c2') // Your project ID
 ;
 
-const promise = teams.getMemberships('[TEAM_ID]');
+const promise = graphql.query({});
 
 promise.then(function (response) {
     console.log(response); // Success
