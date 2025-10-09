@@ -1,18 +1,15 @@
-import { Client,  Storage } from "appwrite";
+import { Client, Storage } from "appwrite";
 
-const client = new Client();
+const client = new Client()
+    .setEndpoint('https://<REGION>.cloud.appwrite.io/v1') // Your API Endpoint
+    .setProject('<YOUR_PROJECT_ID>'); // Your project ID
 
 const storage = new Storage(client);
 
-client
-    .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
-    .setProject('5df5acd0d48c2') // Your project ID
-;
-
-const promise = storage.listFiles('[BUCKET_ID]');
-
-promise.then(function (response) {
-    console.log(response); // Success
-}, function (error) {
-    console.log(error); // Failure
+const result = await storage.listFiles({
+    bucketId: '<BUCKET_ID>',
+    queries: [], // optional
+    search: '<SEARCH>' // optional
 });
+
+console.log(result);

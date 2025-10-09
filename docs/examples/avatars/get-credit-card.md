@@ -1,14 +1,16 @@
-import { Client, CreditCard, Avatars } from "appwrite";
+import { Client, Avatars, CreditCard } from "appwrite";
 
-const client = new Client();
+const client = new Client()
+    .setEndpoint('https://<REGION>.cloud.appwrite.io/v1') // Your API Endpoint
+    .setProject('<YOUR_PROJECT_ID>'); // Your project ID
 
 const avatars = new Avatars(client);
 
-client
-    .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
-    .setProject('5df5acd0d48c2') // Your project ID
-;
+const result = avatars.getCreditCard({
+    code: CreditCard.AmericanExpress,
+    width: 0, // optional
+    height: 0, // optional
+    quality: -1 // optional
+});
 
-const result = avatars.getCreditCard(CreditCard.AmericanExpress);
-
-console.log(result); // Resource URL
+console.log(result);

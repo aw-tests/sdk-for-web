@@ -1,10 +1,33 @@
+import { ExecutionTrigger } from "./enums/execution-trigger"
+import { ExecutionStatus } from "./enums/execution-status"
+
+/**
+ * Appwrite Models
+ */
 export namespace Models {
+
+    declare const __default: unique symbol;
+
+    /**
+     * Rows List
+     */
+    export type RowList<Row extends Models.Row = Models.DefaultRow> = {
+        /**
+         * Total number of rows that matched your query.
+         */
+        total: number;
+        /**
+         * List of rows.
+         */
+        rows: Row[];
+    }
+
     /**
      * Documents List
      */
-    export type DocumentList<Document extends Models.Document> = {
+    export type DocumentList<Document extends Models.Document = Models.DefaultDocument> = {
         /**
-         * Total number of documents documents that matched your query.
+         * Total number of documents that matched your query.
          */
         total: number;
         /**
@@ -12,12 +35,13 @@ export namespace Models {
          */
         documents: Document[];
     }
+
     /**
      * Sessions List
      */
     export type SessionList = {
         /**
-         * Total number of sessions documents that matched your query.
+         * Total number of sessions that matched your query.
          */
         total: number;
         /**
@@ -25,12 +49,13 @@ export namespace Models {
          */
         sessions: Session[];
     }
+
     /**
      * Identities List
      */
     export type IdentityList = {
         /**
-         * Total number of identities documents that matched your query.
+         * Total number of identities that matched your query.
          */
         total: number;
         /**
@@ -38,12 +63,13 @@ export namespace Models {
          */
         identities: Identity[];
     }
+
     /**
      * Logs List
      */
     export type LogList = {
         /**
-         * Total number of logs documents that matched your query.
+         * Total number of logs that matched your query.
          */
         total: number;
         /**
@@ -51,12 +77,13 @@ export namespace Models {
          */
         logs: Log[];
     }
+
     /**
      * Files List
      */
     export type FileList = {
         /**
-         * Total number of files documents that matched your query.
+         * Total number of files that matched your query.
          */
         total: number;
         /**
@@ -64,12 +91,13 @@ export namespace Models {
          */
         files: File[];
     }
+
     /**
      * Teams List
      */
-    export type TeamList<Preferences extends Models.Preferences> = {
+    export type TeamList<Preferences extends Models.Preferences = Models.DefaultPreferences> = {
         /**
-         * Total number of teams documents that matched your query.
+         * Total number of teams that matched your query.
          */
         total: number;
         /**
@@ -77,12 +105,13 @@ export namespace Models {
          */
         teams: Team<Preferences>[];
     }
+
     /**
      * Memberships List
      */
     export type MembershipList = {
         /**
-         * Total number of memberships documents that matched your query.
+         * Total number of memberships that matched your query.
          */
         total: number;
         /**
@@ -90,12 +119,13 @@ export namespace Models {
          */
         memberships: Membership[];
     }
+
     /**
      * Executions List
      */
     export type ExecutionList = {
         /**
-         * Total number of executions documents that matched your query.
+         * Total number of executions that matched your query.
          */
         total: number;
         /**
@@ -103,12 +133,13 @@ export namespace Models {
          */
         executions: Execution[];
     }
+
     /**
      * Countries List
      */
     export type CountryList = {
         /**
-         * Total number of countries documents that matched your query.
+         * Total number of countries that matched your query.
          */
         total: number;
         /**
@@ -116,12 +147,13 @@ export namespace Models {
          */
         countries: Country[];
     }
+
     /**
      * Continents List
      */
     export type ContinentList = {
         /**
-         * Total number of continents documents that matched your query.
+         * Total number of continents that matched your query.
          */
         total: number;
         /**
@@ -129,12 +161,13 @@ export namespace Models {
          */
         continents: Continent[];
     }
+
     /**
      * Languages List
      */
     export type LanguageList = {
         /**
-         * Total number of languages documents that matched your query.
+         * Total number of languages that matched your query.
          */
         total: number;
         /**
@@ -142,12 +175,13 @@ export namespace Models {
          */
         languages: Language[];
     }
+
     /**
      * Currencies List
      */
     export type CurrencyList = {
         /**
-         * Total number of currencies documents that matched your query.
+         * Total number of currencies that matched your query.
          */
         total: number;
         /**
@@ -155,12 +189,13 @@ export namespace Models {
          */
         currencies: Currency[];
     }
+
     /**
      * Phones List
      */
     export type PhoneList = {
         /**
-         * Total number of phones documents that matched your query.
+         * Total number of phones that matched your query.
          */
         total: number;
         /**
@@ -168,12 +203,13 @@ export namespace Models {
          */
         phones: Phone[];
     }
+
     /**
      * Locale codes list
      */
     export type LocaleCodeList = {
         /**
-         * Total number of localeCodes documents that matched your query.
+         * Total number of localeCodes that matched your query.
          */
         total: number;
         /**
@@ -181,6 +217,60 @@ export namespace Models {
          */
         localeCodes: LocaleCode[];
     }
+
+    /**
+     * Transaction List
+     */
+    export type TransactionList = {
+        /**
+         * Total number of transactions that matched your query.
+         */
+        total: number;
+        /**
+         * List of transactions.
+         */
+        transactions: Transaction[];
+    }
+
+    /**
+     * Row
+     */
+    export type Row = {
+        /**
+         * Row ID.
+         */
+        $id: string;
+        /**
+         * Row automatically incrementing ID.
+         */
+        $sequence: number;
+        /**
+         * Table ID.
+         */
+        $tableId: string;
+        /**
+         * Database ID.
+         */
+        $databaseId: string;
+        /**
+         * Row creation date in ISO 8601 format.
+         */
+        $createdAt: string;
+        /**
+         * Row update date in ISO 8601 format.
+         */
+        $updatedAt: string;
+        /**
+         * Row permissions. [Learn more about permissions](https://appwrite.io/docs/permissions).
+         */
+        $permissions: string[];
+    }
+
+    export type DefaultRow = Row & {
+        [key: string]: any;
+        [__default]: true;
+    };
+
     /**
      * Document
      */
@@ -189,6 +279,10 @@ export namespace Models {
          * Document ID.
          */
         $id: string;
+        /**
+         * Document automatically incrementing ID.
+         */
+        $sequence: number;
         /**
          * Collection ID.
          */
@@ -209,8 +303,13 @@ export namespace Models {
          * Document permissions. [Learn more about permissions](https://appwrite.io/docs/permissions).
          */
         $permissions: string[];
-        [key: string]: any;
     }
+
+    export type DefaultDocument = Document & {
+        [key: string]: any;
+        [__default]: true;
+    };
+
     /**
      * Log
      */
@@ -300,10 +399,11 @@ export namespace Models {
          */
         countryName: string;
     }
+
     /**
      * User
      */
-    export type User<Preferences extends Models.Preferences> = {
+    export type User<Preferences extends Models.Preferences = Models.DefaultPreferences> = {
         /**
          * User ID.
          */
@@ -365,14 +465,23 @@ export namespace Models {
          */
         phoneVerification: boolean;
         /**
+         * Multi factor authentication status.
+         */
+        mfa: boolean;
+        /**
          * User preferences as a key-value object
          */
         prefs: Preferences;
+        /**
+         * A user-owned message receiver. A single user may have multiple e.g. emails, phones, and a browser. Each target is registered with a single provider.
+         */
+        targets: Target[];
         /**
          * Most recent access date in ISO 8601 format. This attribute is only updated again after 24 hours.
          */
         accessedAt: string;
     }
+
     /**
      * AlgoMD5
      */
@@ -382,6 +491,7 @@ export namespace Models {
          */
         type: string;
     }
+
     /**
      * AlgoSHA
      */
@@ -391,6 +501,7 @@ export namespace Models {
          */
         type: string;
     }
+
     /**
      * AlgoPHPass
      */
@@ -400,6 +511,7 @@ export namespace Models {
          */
         type: string;
     }
+
     /**
      * AlgoBcrypt
      */
@@ -409,6 +521,7 @@ export namespace Models {
          */
         type: string;
     }
+
     /**
      * AlgoScrypt
      */
@@ -434,6 +547,7 @@ export namespace Models {
          */
         length: number;
     }
+
     /**
      * AlgoScryptModified
      */
@@ -455,6 +569,7 @@ export namespace Models {
          */
         signerKey: string;
     }
+
     /**
      * AlgoArgon2
      */
@@ -476,12 +591,18 @@ export namespace Models {
          */
         threads: number;
     }
+
     /**
      * Preferences
      */
     export type Preferences = {
-        [key: string]: any;
     }
+
+    export type DefaultPreferences = Preferences & {
+        [key: string]: any;
+        [__default]: true;
+    };
+
     /**
      * Session
      */
@@ -494,6 +615,10 @@ export namespace Models {
          * Session creation date in ISO 8601 format.
          */
         $createdAt: string;
+        /**
+         * Session update date in ISO 8601 format.
+         */
+        $updatedAt: string;
         /**
          * User ID.
          */
@@ -586,7 +711,20 @@ export namespace Models {
          * Returns true if this the current user session.
          */
         current: boolean;
+        /**
+         * Returns a list of active session factors.
+         */
+        factors: string[];
+        /**
+         * Secret used to authenticate the user. Only included if the request was made with an API key
+         */
+        secret: string;
+        /**
+         * Most recent date in ISO 8601 format when the session successfully passed MFA challenge.
+         */
+        mfaUpdatedAt: string;
     }
+
     /**
      * Identity
      */
@@ -632,6 +770,7 @@ export namespace Models {
          */
         providerRefreshToken: string;
     }
+
     /**
      * Token
      */
@@ -656,7 +795,12 @@ export namespace Models {
          * Token expiration date in ISO 8601 format.
          */
         expire: string;
+        /**
+         * Security phrase of a token. Empty if security phrase was not requested when creating a token. It includes randomly generated phrase which is also sent in the external resource such as email.
+         */
+        phrase: string;
     }
+
     /**
      * JWT
      */
@@ -666,6 +810,7 @@ export namespace Models {
          */
         jwt: string;
     }
+
     /**
      * Locale
      */
@@ -683,7 +828,7 @@ export namespace Models {
          */
         country: string;
         /**
-         * Continent code. A two character continent code &quot;AF&quot; for Africa, &quot;AN&quot; for Antarctica, &quot;AS&quot; for Asia, &quot;EU&quot; for Europe, &quot;NA&quot; for North America, &quot;OC&quot; for Oceania, and &quot;SA&quot; for South America.
+         * Continent code. A two character continent code "AF" for Africa, "AN" for Antarctica, "AS" for Asia, "EU" for Europe, "NA" for North America, "OC" for Oceania, and "SA" for South America.
          */
         continentCode: string;
         /**
@@ -699,6 +844,7 @@ export namespace Models {
          */
         currency: string;
     }
+
     /**
      * LocaleCode
      */
@@ -712,6 +858,7 @@ export namespace Models {
          */
         name: string;
     }
+
     /**
      * File
      */
@@ -761,10 +908,11 @@ export namespace Models {
          */
         chunksUploaded: number;
     }
+
     /**
      * Team
      */
-    export type Team<Preferences extends Models.Preferences> = {
+    export type Team<Preferences extends Models.Preferences = Models.DefaultPreferences> = {
         /**
          * Team ID.
          */
@@ -790,6 +938,7 @@ export namespace Models {
          */
         prefs: Preferences;
     }
+
     /**
      * Membership
      */
@@ -811,11 +960,11 @@ export namespace Models {
          */
         userId: string;
         /**
-         * User name.
+         * User name. Hide this attribute by toggling membership privacy in the Console.
          */
         userName: string;
         /**
-         * User email address.
+         * User email address. Hide this attribute by toggling membership privacy in the Console.
          */
         userEmail: string;
         /**
@@ -839,10 +988,15 @@ export namespace Models {
          */
         confirm: boolean;
         /**
+         * Multi factor authentication status, true if the user has MFA enabled or false otherwise. Hide this attribute by toggling membership privacy in the Console.
+         */
+        mfa: boolean;
+        /**
          * User list of roles
          */
         roles: string[];
     }
+
     /**
      * Execution
      */
@@ -856,7 +1010,7 @@ export namespace Models {
          */
         $createdAt: string;
         /**
-         * Execution upate date in ISO 8601 format.
+         * Execution update date in ISO 8601 format.
          */
         $updatedAt: string;
         /**
@@ -868,13 +1022,17 @@ export namespace Models {
          */
         functionId: string;
         /**
+         * Function's deployment ID used to create the execution.
+         */
+        deploymentId: string;
+        /**
          * The trigger that caused the function to execute. Possible values can be: `http`, `schedule`, or `event`.
          */
-        trigger: string;
+        trigger: ExecutionTrigger;
         /**
          * The status of the function execution. Possible values can be: `waiting`, `processing`, `completed`, or `failed`.
          */
-        status: string;
+        status: ExecutionStatus;
         /**
          * HTTP request method type.
          */
@@ -884,7 +1042,7 @@ export namespace Models {
          */
         requestPath: string;
         /**
-         * HTTP response headers as a key-value object. This will return only whitelisted headers. All headers are returned if execution is created as synchronous.
+         * HTTP request headers as a key-value object. This will return only whitelisted headers. All headers are returned if execution is created as synchronous.
          */
         requestHeaders: Headers[];
         /**
@@ -908,10 +1066,15 @@ export namespace Models {
          */
         errors: string;
         /**
-         * Function execution duration in seconds.
+         * Resource(function/site) execution duration in seconds.
          */
         duration: number;
+        /**
+         * The scheduled time for execution. If left empty, execution will be queued immediately.
+         */
+        scheduledAt?: string;
     }
+
     /**
      * Country
      */
@@ -925,6 +1088,7 @@ export namespace Models {
          */
         code: string;
     }
+
     /**
      * Continent
      */
@@ -938,6 +1102,7 @@ export namespace Models {
          */
         code: string;
     }
+
     /**
      * Language
      */
@@ -955,6 +1120,7 @@ export namespace Models {
          */
         nativeName: string;
     }
+
     /**
      * Currency
      */
@@ -988,6 +1154,7 @@ export namespace Models {
          */
         namePlural: string;
     }
+
     /**
      * Phone
      */
@@ -1005,6 +1172,7 @@ export namespace Models {
          */
         countryName: string;
     }
+
     /**
      * Headers
      */
@@ -1017,5 +1185,187 @@ export namespace Models {
          * Header value.
          */
         value: string;
+    }
+
+    /**
+     * MFA Challenge
+     */
+    export type MfaChallenge = {
+        /**
+         * Token ID.
+         */
+        $id: string;
+        /**
+         * Token creation date in ISO 8601 format.
+         */
+        $createdAt: string;
+        /**
+         * User ID.
+         */
+        userId: string;
+        /**
+         * Token expiration date in ISO 8601 format.
+         */
+        expire: string;
+    }
+
+    /**
+     * MFA Recovery Codes
+     */
+    export type MfaRecoveryCodes = {
+        /**
+         * Recovery codes.
+         */
+        recoveryCodes: string[];
+    }
+
+    /**
+     * MFAType
+     */
+    export type MfaType = {
+        /**
+         * Secret token used for TOTP factor.
+         */
+        secret: string;
+        /**
+         * URI for authenticator apps.
+         */
+        uri: string;
+    }
+
+    /**
+     * MFAFactors
+     */
+    export type MfaFactors = {
+        /**
+         * Can TOTP be used for MFA challenge for this account.
+         */
+        totp: boolean;
+        /**
+         * Can phone (SMS) be used for MFA challenge for this account.
+         */
+        phone: boolean;
+        /**
+         * Can email be used for MFA challenge for this account.
+         */
+        email: boolean;
+        /**
+         * Can recovery code be used for MFA challenge for this account.
+         */
+        recoveryCode: boolean;
+    }
+
+    /**
+     * Transaction
+     */
+    export type Transaction = {
+        /**
+         * Transaction ID.
+         */
+        $id: string;
+        /**
+         * Transaction creation time in ISO 8601 format.
+         */
+        $createdAt: string;
+        /**
+         * Transaction update date in ISO 8601 format.
+         */
+        $updatedAt: string;
+        /**
+         * Current status of the transaction. One of: pending, committing, committed, rolled_back, failed.
+         */
+        status: string;
+        /**
+         * Number of operations in the transaction.
+         */
+        operations: number;
+        /**
+         * Expiration time in ISO 8601 format.
+         */
+        expiresAt: string;
+    }
+
+    /**
+     * Subscriber
+     */
+    export type Subscriber = {
+        /**
+         * Subscriber ID.
+         */
+        $id: string;
+        /**
+         * Subscriber creation time in ISO 8601 format.
+         */
+        $createdAt: string;
+        /**
+         * Subscriber update date in ISO 8601 format.
+         */
+        $updatedAt: string;
+        /**
+         * Target ID.
+         */
+        targetId: string;
+        /**
+         * Target.
+         */
+        target: Target;
+        /**
+         * Topic ID.
+         */
+        userId: string;
+        /**
+         * User Name.
+         */
+        userName: string;
+        /**
+         * Topic ID.
+         */
+        topicId: string;
+        /**
+         * The target provider type. Can be one of the following: `email`, `sms` or `push`.
+         */
+        providerType: string;
+    }
+
+    /**
+     * Target
+     */
+    export type Target = {
+        /**
+         * Target ID.
+         */
+        $id: string;
+        /**
+         * Target creation time in ISO 8601 format.
+         */
+        $createdAt: string;
+        /**
+         * Target update date in ISO 8601 format.
+         */
+        $updatedAt: string;
+        /**
+         * Target Name.
+         */
+        name: string;
+        /**
+         * User ID.
+         */
+        userId: string;
+        /**
+         * Provider ID.
+         */
+        providerId?: string;
+        /**
+         * The target provider type. Can be one of the following: `email`, `sms` or `push`.
+         */
+        providerType: string;
+        /**
+         * The target identifier.
+         */
+        identifier: string;
+        /**
+         * Is the target expired.
+         */
+        expired: boolean;
     }
 }

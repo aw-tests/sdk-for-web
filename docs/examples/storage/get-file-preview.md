@@ -1,14 +1,26 @@
-import { Client,  Storage } from "appwrite";
+import { Client, Storage, ImageGravity, ImageFormat } from "appwrite";
 
-const client = new Client();
+const client = new Client()
+    .setEndpoint('https://<REGION>.cloud.appwrite.io/v1') // Your API Endpoint
+    .setProject('<YOUR_PROJECT_ID>'); // Your project ID
 
 const storage = new Storage(client);
 
-client
-    .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
-    .setProject('5df5acd0d48c2') // Your project ID
-;
+const result = storage.getFilePreview({
+    bucketId: '<BUCKET_ID>',
+    fileId: '<FILE_ID>',
+    width: 0, // optional
+    height: 0, // optional
+    gravity: ImageGravity.Center, // optional
+    quality: -1, // optional
+    borderWidth: 0, // optional
+    borderColor: '', // optional
+    borderRadius: 0, // optional
+    opacity: 0, // optional
+    rotation: -360, // optional
+    background: '', // optional
+    output: ImageFormat.Jpg, // optional
+    token: '<TOKEN>' // optional
+});
 
-const result = storage.getFilePreview('[BUCKET_ID]', '[FILE_ID]');
-
-console.log(result); // Resource URL
+console.log(result);

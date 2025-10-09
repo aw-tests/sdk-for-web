@@ -1,18 +1,16 @@
-import { Client,  Account } from "appwrite";
+import { Client, Account } from "appwrite";
 
-const client = new Client();
+const client = new Client()
+    .setEndpoint('https://<REGION>.cloud.appwrite.io/v1') // Your API Endpoint
+    .setProject('<YOUR_PROJECT_ID>'); // Your project ID
 
 const account = new Account(client);
 
-client
-    .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
-    .setProject('5df5acd0d48c2') // Your project ID
-;
-
-const promise = account.create('[USER_ID]', 'email@example.com', '');
-
-promise.then(function (response) {
-    console.log(response); // Success
-}, function (error) {
-    console.log(error); // Failure
+const result = await account.create({
+    userId: '<USER_ID>',
+    email: 'email@example.com',
+    password: '',
+    name: '<NAME>' // optional
 });
+
+console.log(result);

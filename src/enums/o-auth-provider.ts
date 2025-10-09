@@ -1,4 +1,4 @@
-export enum Provider {
+export enum OAuthProvider {
     Amazon = 'amazon',
     Apple = 'apple',
     Auth0 = 'auth0',
@@ -13,6 +13,7 @@ export enum Provider {
     Dropbox = 'dropbox',
     Etsy = 'etsy',
     Facebook = 'facebook',
+    Figma = 'figma',
     Github = 'github',
     Gitlab = 'gitlab',
     Google = 'google',
@@ -35,6 +36,7 @@ export enum Provider {
     Yahoo = 'yahoo',
     Yammer = 'yammer',
     Yandex = 'yandex',
+    Zoho = 'zoho',
     Zoom = 'zoom',
     Mock = 'mock',
 }
